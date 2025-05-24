@@ -2,8 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import React from 'react'
 import Navbar from './component/Navbar'
 import Home from './component/Home'
-import Editor from './component/Editor'
-import Problemset from './component/Problemset'
+import Editor from './component/Editor' 
 
 function App() {
   const router = createBrowserRouter([
@@ -24,16 +23,7 @@ function App() {
           <Editor />
         </>
       )
-    },
-    {
-      path: '/++++++++++++++++++++++++++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*******************************************problemset',
-      element:(
-        <>    
-          <Problemset />
-        
-        </>
-      )                         
-    }
+    }, 
   ])
 
   return <RouterProvider router={router} />
