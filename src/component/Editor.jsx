@@ -1,72 +1,102 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { Editor } from '@monaco-editor/react'
-import { useState, useEffect } from 'react'
-function Editorc() {
-    const [srcDoc, setSrcDoc] = useState('');
-    const [js, setJs] = useState('console.log("Hello World");');
-     useEffect(() => {
-        const timer = setTimeout(() => {
-            const sou=`
-            <html>
-            <head>
-                <title>CodeX Output</title>
-                </head>
-            <body>
-                <script>
-                    ${js}
-                </script>   
-                </body>
-                </html>
-            `
-            setSrcDoc(sou);
-        }, 1000);
-        return () => clearTimeout(timer);
-    
-      }, [js]);
-    
+import React, { useState } from 'react'
+import Editor from '@monaco-editor/react'
+
+function CodeEditor() {
+  const [html, setHtml] = useState('<h1>Hello World</h1>')
+  const [css, setCss] = useState('h1 { color: red; }')
+  const [js, setJs] = useState('console.log("Hello World");')
+  const [output, setOutput] = useState('')
+
+  const runCode = () => {
+    const source = `
+      <html>
+        <head>
+          <style>${css}</style>
+        </head>
+        <body>
+          ${html}
+          <script>${js}<\/script>
+        </body>
+      </html>
+    `
+    setOutput(source)
+  }
+
   return (
-    <div className='w-full h-full bg-gray-700 absolute top-[0%] left-0 flex justify-center items-center'      > 
-    <div className="w-[100%] h-[100%] bg-gray-800 absolute top-0 left-0 z-10">
-        <h1 className="text-center text-white font-bold text-4xl">CodeX Editor</h1>
-        <Link to="/" className="absolute top-8 left-[44px] "><button className="bg-red-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">Home</button></Link>
-    </div> 
-    <div className="w-[100%] h-[50%] bg-gray-800 absolute flex justify-center items-center top-[17%] left-0 z-20">
-        
-    <Editor 
-        defaultLanguage="javascript"
-        defaultValue={js}
-        onChange={(value) => setJs(value) ||  ""}
-        className='text-white font-bold text-xl w-[100%] ml-[28%] h-[100%] bg-gray-100 border-none'          
-        options={{
-          fontSize: 18,
-          minimap: {enabled: false},
-          wordWrap: 'on',
-            lineNumbers: 'on', 
-            tabSize: 2,
-            flex: 'true',
-            justifyContent: 'center',
-            alignItems: 'center',
-          automaticLayout: true,
-          scrollbar: {
-            vertical: 'hidden',
-            horizontal: 'hidden'
-          }}}
-        theme="vs-dark"
-      />
-       <iframe
-        srcDoc={srcDoc}
-        title="Output"
-        sandbox="allow-scripts"
-        frameBorder="0"
-        width="50%"
-        
-        height="100%"
-      />
-    
+    <div className="w-full h-screen bg-gray-900 flex flex-col">
+      {/* Header */}
+      <div className="w-full h-16 bg-gray-800 flex items-center justify-between px-6">
+        <h1 className="text-white text-2xl font-bold text-center">Web development editor</h1>
+        <button
+          onClick={runCode}
+          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+        >
+          Run Code
+        </button>
+      </div>
+
+      {/* Editor Section */}
+      <div className="flex flex-row w-full h-2/3">
+        <div className="w-1/3 h-full 
+        bg-gray-800 p-4">
+          <h2 className="text-white text-lg font-bold mb-2">HTML</h2>
+          <Editor
+            defaultLanguage="html"
+            value={html}
+            onChange={(value) => setHtml(value || '')}
+            theme="vs-dark"
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: 'on',
+              lineNumbers: 'on',
+            }}
+          />
+        </div>
+        <div className="w-1/3 bg-gray-800 p-4">
+          <h2 className="text-white text-lg font-bold mb-2">CSS</h2>
+          <Editor
+            defaultLanguage="css"
+            value={css}
+           theme="vs-dark"
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: 'on',
+              lineNumbers: 'on',
+            }}
+          />
+        </div>
+        <div className="w-1/3 bg-gray-800 p-4">
+          <h2 className="text-white text-lg font-bold mb-2">JavaScript</h2>
+          <Editor
+            defaultLanguage="javascript"
+            value={js}
+            onChange={(value) => setJs(value || '')}
+            theme="vs-dark"
+            options={{
+              fontSize: 14,
+              minimap: { enabled: false },
+              wordWrap: 'on',
+              lineNumbers: 'on',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Output Section */}
+      <div className="w-full h-1/3 bg-gray-900 p-4">
+        <h2 className="text-white text-lg font-bold mb-2">Output</h2>
+        <iframe
+          srcDoc={output}
+          title="Output"
+          sandbox="allow-scripts"
+          frameBorder="0"
+          className="w-full h-full bg-white"
+        ></iframe>
+      </div>
     </div>
-    </div> 
   )
 }
 
-export default Editorc
+export default CodeEditor
