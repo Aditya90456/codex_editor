@@ -1,6 +1,6 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const fs = require('fs');
 const { exec } = require('child_process');
 const { v4: uuid } = require('uuid');
@@ -9,12 +9,14 @@ const path = require('path');
 const app = express();
 const PORT = 5000;
 
-app.use(cors());
+// ✅ Fix CORS
+app.use(cors()); // Allow all origins 
 app.use(bodyParser.json());
 
 app.post('/run-cpp', (req, res) => {
   try {
     const { code } = req.body;
+
     const filename = `${uuid()}.cpp`;
     const filepath = path.join(__dirname, filename);
     const outputFile = `${filepath}.out`;
@@ -36,15 +38,15 @@ app.post('/run-cpp', (req, res) => {
           return res.status(400).json({ output: runStderr || 'Runtime error' });
         }
 
-        res.json({ output: stdout });
+        return res.json({ output: stdout });
       });
     });
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).json({ output: 'Internal Server Error' });
+    res.status(500).send('Internal Server Error');
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Backend running at http://localhost:${PORT}`);
 });
