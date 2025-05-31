@@ -4,7 +4,10 @@ import Navbar from './component/Navbar'
 import Home from './component/Home'
 import Editor from './component/Editor' 
 import Cpp from './component/Cpp'
-import { motion } from 'motion/react'
+import { motion } from 'motion/react' 
+import Prob from './component/Prob'
+import TwoSum from './component/Twosum'
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -41,10 +44,42 @@ function App() {
           <Cpp />
         </>
       )
+    },
+    {
+      path:'/prob',
+      element: (
+
+        <> 
+        <Navbar />
+        <Prob />
+        </>
+      )   
+    },
+    {
+      path:'/two-sum',
+      element: (
+        <>
+          <Navbar />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}  
+
+            >
+              <TwoSum />
+              </motion.div>
+          </motion.div>
+        </>
+      )
     }
   ])
 
-  return <RouterProvider router={router} />
-}
+  return <RouterProvider router={router} />}
 
 export default App

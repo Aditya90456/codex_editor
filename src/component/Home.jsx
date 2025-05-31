@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom'
 import { FaHtml5, } from 'react-icons/fa6'
 import { CgCPlusPlus } from 'react-icons/cg'
 import { motion } from 'framer-motion'
+import Array from './Array'
 function Home() { 
   return (
 
-    <div className='w-full flex justify-center absolute top-[8%] left-0 right-0 bottom-0 items-center bg-gray-800 text-white'> 
+    <>
+     <div className='w-full flex justify-center absolute top-[8%] left-0 right-0 bottom-0 items-center bg-gray-800 text-white'> 
         <div className='w-full md:w-1/2 flex flex-col justify-center items-center'>
             <motion.h1
             initial={{ opacity: 0, y: -50 }}
@@ -24,8 +26,14 @@ function Home() {
             <Link to='/cpp' className=' text-white hover:scale-110 duration-300 flex items-center justify-center bg-red-500 hover:bg-red-600  gap-3 font-bold py-3 px-4 rounded-full ml-2'> <CgCPlusPlus className='h-6 w-6 m-auto' /> C++ Editor</Link>
                         </div>
         </div>
+        
+
+        </div> 
+    <div className='w-full h-screen bg-gray-900 flex justify-center items-center'>
+        <Array />
     </div>
 
+    </>
   )
 }
 
