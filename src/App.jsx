@@ -7,6 +7,9 @@ import Cpp from './component/Cpp'
 import { motion } from 'motion/react' 
 import Prob from './component/Prob'
 import TwoSum from './component/Twosum'
+import { path } from 'motion/react-client'
+import Ls from './component/Ls'
+import Mtsa from './component/Mtsa'
 
 function App() {
   const router = createBrowserRouter([
@@ -77,7 +80,51 @@ function App() {
           </motion.div>
         </>
       )
-    }
+    },
+    {
+      path: '/longest-substring',
+      element: (
+        <>
+          <Navbar />  
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <motion.div
+              initial={{ x: -100, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Ls />
+            </motion.div>
+
+          </motion.div>
+        </>
+      )
+  },
+  {
+    path:'/median-of-two-sorted-arrays',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Mtsa />        </motion.div>
+          </motion.div> 
+      </>
+    )
+  }
   ])
 
   return <RouterProvider router={router} />}
