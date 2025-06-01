@@ -124,7 +124,7 @@ function App() {
           </motion.div> 
       </>
     )
-  }
+  },
   ])
 
   return <RouterProvider router={router} />}

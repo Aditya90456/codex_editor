@@ -32,16 +32,7 @@ function Array() {
                               <h1 className="text-2xl font-bold text-white" >
                                 Problemset of Array
                               </h1>
-
-                                <button className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-4" onClick={() => {
-                                     // Placeholder for actual solution submission logic   
-                                     {
-                                        window.location.href = '/prob'; // Redirect to C++ editor
-                                     }
-                                    Start
-                                }}>
-                                    Start
-                                </button>
+                                <Link to='/prob' className='w-32 h-12 bg-blue-600 text-white rounded-lg flex justify-center items-center'>Go to Problemset</Link>
                             </div>
                     </div>
                     </div>
