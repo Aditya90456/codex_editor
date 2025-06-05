@@ -10,6 +10,10 @@ import TwoSum from './component/Twosum'
 import { path } from 'motion/react-client'
 import Ls from './component/Ls'
 import Mtsa from './component/Mtsa'
+import Liya from './component/Liya'
+import Login from './component/Login'
+import Signup from './component/Signup'
+import Dashboard from './component/Dashboard'
 
 function App() {
   const router = createBrowserRouter([
@@ -125,8 +129,98 @@ function App() {
       </>
     )
   },
+  {
+    path:'/AI-topic-guide',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Liya />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/login',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Login />
+          </motion.div>
+        </motion.div>
+      </>
+    ) 
+  },
+  {
+    path:'/signup',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Signup />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/dashboard',
+
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Dashboard />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  }
   ])
 
-  return <RouterProvider router={router} />}
-
+  return <RouterProvider router={router} />
+}
 export default App
