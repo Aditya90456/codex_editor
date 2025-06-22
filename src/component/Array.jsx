@@ -1,46 +1,42 @@
-import React from 'react'
-import CppEditor from './Cpp'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function Array() {
   return (
-    <div className='absolute top-[90%] left-0 w-full h-full flex justify-center items-center'>
-        <div className="w-full h-full bg-gray-800 shadow-lg rounded-lg flex justify-center items-center">
-
-            <div className="w-full h-full bg-white rounded-lg flex flex-col justify-center items-center">   
-                <h1 className='text-2xl font-bold text-gray-800 mb-4'>Array Example</h1>
-                <p className='text-gray-600 mb-4'>This is a simple example of an array in JavaScript.</p>
-                <div className='bg-gray-200 p-4 rounded-lg'>
-                    <pre className='text-sm text-gray-800'>
-                        {`const fruits = ['Apple', 'Banana', 'Cherry']`}
-                    </pre>;  
-                    </div>
-                    <p className='text-gray-600 mb-4'>In this example, we have an array called <code>fruits</code> that contains three strings: <code>'Apple'</code>, <code>'Banana'</code>, and <code>'Cherry'</code>.</p>
-                    <div className="mt-4 w-full flex justify-center items-center bg-gray-800 p-4 rounded-lg text-white"> 
-                            <pre className='text-sm text-white'>
-                                {`#include <iostream>\n using namespace std;\n\nint main() {\n    string fruits[] = {"Apple", "Banana", "Cherry"};\n    cout << fruits[0] << endl; // Output: Apple\n    return 0;\n}`}
-                            </pre>  
-                            
-                        </div>
-                <div className='mt-4 text-gray-600'>
-                    <p>In this C++ example, we declare an array of strings called <code>fruits</code> and initialize it with the same values. We then print the first element of the array, which is <code>'Apple'</code>.</p>
-                    </div>
-                    <div className="problemset mt-4 w-full flex justify-center items-center bg-gray-800 p-4 rounded-lg text-white">
-                        
-
-                            <div className="w-full flex justify-center items-center mt-4">
-                              <h1 className="text-2xl font-bold text-white" >
-                                Problemset of Array
-                              </h1>
-                                <Link to='/prob' className='w-32 h-12 bg-blue-600 text-white rounded-lg flex justify-center items-center'>Go to Problemset</Link>
-                            </div>
-                    </div>
-                    </div>
-                    </div>
-            </div> 
-
-)
-
+    <div className="flex absolute top-[109%] w-full h-full flex-col items-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
+      <motion.div
+        className="w-full max-w-4xl bg-black bg-opacity-40 backdrop-blur-md rounded-lg p-10 shadow-2xl mt-[22%]"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h1 className="text-5xl font-bold text-white text-center mb-8">Array Problemset</h1>
+        <p className="text-gray-300 text-center text-lg mb-8">
+          Arrays are one of the most fundamental data structures in programming. They allow you to store multiple values in a single variable and access them using an index.
+        </p>
+        <div className="flex justify-center items-center mt-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5 }}
+            className="ml-4"
+          >
+            <Link
+              to="/prob"
+              className="text-white hover:text-gray-400 bg-blue-500 hover:bg-blue-600 font-bold py-3 px-6 rounded-full transition-all duration-300"
+            >
+              Problem Set
+            </Link>
+          </motion.div>
+        </div>
+      </motion.div>
+      <div className="absolute bottom-0 left-0 w-full h-16 bg-gray-900 flex justify-center items-center">
+        <p className="text-white text-sm">© 2025 CodeX. All rights reserved.</p>
+      </div>
+    </div>
+  );
 }
 
-export default Array
+export default Array;
