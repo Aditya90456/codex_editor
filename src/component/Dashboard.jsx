@@ -1,53 +1,54 @@
-
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link} from 'react-router-dom';
 
 function Dashboard() {
-  const [username, setUsername] = useState(null);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {               
+    const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/user'); // Make sure this endpoint returns an array or object with 'username'
-        setUsername(response.data[0]?.username || ''); // Use optional chaining to avoid undefined access
+        const res = await axios.get('http://localhost:5173/prob'); // ✅ Use backend port
+        setData(res.data[0].problems || []); // Assuming the response contains a `problems` array
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
-  
+
   return (
-    <div className="flex flex-col items-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
-      <div className="w-full max-w-6xl bg-black bg-opacity-20 backdrop-blur-md rounded-lg p-8 shadow-2xl mt-10">
-         
-
-        <h2 className="text-4xl text-white font-bold text-center mb-6">
-          {username ? `${username}'s Dashboard` : 'Dashboard'}
-        </h2>
-        <div className="flex justify-end mb-4">
-          <Link to="/" className="text-white hover:text-gray-400 transition-colors">click here to go back to home</Link>
-        </div>
-
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-4">
+      <div className="w-full max-w-6xl bg-black bg-opacity-30 backdrop-blur-md rounded-lg p-8 shadow-2xl mt-10">
+        <h1 className="text-4xl font-bold text-white text-center mb-8">📊 DSA Progress Dashboard</h1>
         {loading ? (
-          <p className="text-white text-center">Loading...</p>
+          <p className="text-gray-300 text-center text-lg">Loading...</p>
+        ) : data.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-800 p-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
+              >
+                <h2 className="text-xl font-bold text-white mb-2">{item.title}</h2>
+                <p className="text-sm text-gray-300 mb-4">Solved: {item.count}</p>
+                <div className="w-full bg-gray-200 rounded-full h-4">
+                  <div
+                    className="bg-green-500 h-4 rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(item.count / 10, 1) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Progress: {Math.min(item.count / 10, 1) * 100}%
+                </p>
+              </div>
+            ))}
+          </div>
         ) : (
-          <table className="min-w-full bg-gray-800 text-white">
-            <thead className="bg-gray-600">
-              <tr>
-                <th className="py-3 px-6 text-left">Username</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="py-3 px-6 text-left">{username || 'No username found'}</td>
-              </tr>
-            </tbody>
-          </table>
+          <p className="text-gray-300 text-center">No data available</p>
         )}
       </div>
     </div>

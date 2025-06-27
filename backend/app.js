@@ -1,25 +1,26 @@
-// server.js
 const express = require('express');
 const cors = require('cors');
-const { check, validationResult, body } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const { exec } = require('child_process');
-const { v4: uuid } = require('uuid');
-const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const { exec } = require('child_process');
+const { v4: uuid } = require('uuid');
 require('dotenv').config();
 
 const connectDB = require('./db');
 const User = require('./models/User');
+const authenticateToken = require('./middleware/auth');
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Connect to DB
 connectDB()
@@ -29,36 +30,29 @@ connectDB()
     process.exit(1);
   });
 
-// Login Route
-app.post('/login', [
-  check('username').isString().notEmpty(),
-  check('password').isString().notEmpty()
-], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+// Route to fetch all DSA problems
+app.get('/prob', (req, res) => {
+  fs.readFile('./prob(1).js', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading problems:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
 
-  const { username, password } = req.body;
-
-  try {
-    const user = await User.findOne({ username });
-    if (!user) return res.status(401).json({ success: false, message: 'User not found' });
-
-    const isMatch = bcrypt.compareSync(password, user.password);
-    if (!isMatch) return res.status(401).json({ success: false, message: 'Invalid credentials' });
-
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.json({ success: true, token });
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ success: false, message: 'Server error', error: err.message });
-  }
+    try {
+      const problems = JSON.parse(data);
+      res.json(problems);
+    } catch (parseErr) {
+      console.error('Error parsing problems.json:', parseErr);
+      res.status(500).json({ message: 'JSON parse error' });
+    }
+  });
 });
 
 // Signup Route
 app.post('/signup', [
   body('username').isString().notEmpty(),
   body('password').isString().notEmpty(),
-  body('confirmPassword').isString().notEmpty().withMessage('Confirm Password is required'),
+  body('confirmPassword').isString().notEmpty()
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -75,58 +69,102 @@ app.post('/signup', [
 
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = new User({ username, password: hashedPassword });
+    const token=jwt.sign({userId:newUser._id},process.env.JWT_SECRET,{expiresIn:'1h'});
+    newUser.token=token;
     await newUser.save();
 
     res.status(201).json({ success: true, message: 'User registered successfully' });
-  } catch (error) {  
+  } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
-// Add this route at the bottom
-app.get('/user', async (req, res) => {
+
+// Login Route
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
   try {
-    const users = await User.find({}, 'username email createdAt'); // select only necessary fields
-    res.json(users);
+    const user = await User.findOne({ username });
+    if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+
+    const isMatch = bcrypt.compareSync(password, user.password);
+    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.status(200).json({ success: true, token });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// ✅ Protected Route (cleaned up)
+app.post('/logout', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Optionally, you can invalidate the token here by removing it from the user
+    user.token = null; // Clear token
+    await user.save();
+
+    res.json({ message: 'Logged out successfully' });
   } catch (err) {
-    console.error('Fetch users error:', err);
+    console.error('Error logging out:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+);
+app.get('/user', authenticateToken, async (req, res) => {
+
+    try { 
+
+      const user = await User.findById(req.user.userId).select('-password');
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      res.json({ username: user.username, objectId: user._id });
+    } catch (err) {
+      console.error('Error fetching user:', err);
+      res.status(500).json({ message: 'Server error' });
+    }})
+app.get('/protected', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.objectId).select('-password');
+    console.log(user);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({ message: 'Protected content', user });
+  } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// C++ Execution Route
-app.post('/run-cpp', (req, res) => {
-  try {
-    const { code } = req.body;
-    const filename = `${uuid()}.cpp`;
-    const filepath = path.join(__dirname, filename);
-    const outputFile = `${filepath}.out`;
-    const runCmd = process.platform === 'win32' ? `"${outputFile}"` : `./"${outputFile}"`;
 
-    fs.writeFileSync(filepath, code);
+// ✅ C++ Code Execution Route
+app.post('/run', (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ output: 'No code provided' });
 
-    exec(`g++ "${filepath}" -o "${outputFile}"`, (compileErr, _, compileStderr) => {
-      if (compileErr) {
-        fs.unlinkSync(filepath);
-        return res.status(400).json({ output: compileStderr });
-      }
+  const filename = `${uuid()}.cpp`;
+  const filepath = path.join(__dirname, filename);
+  const outputPath = path.join(__dirname, `${uuid()}.exe`);
 
-      exec(runCmd, { timeout: 5000 }, (runErr, stdout, runStderr) => {
-        fs.unlinkSync(filepath);
-        if (fs.existsSync(outputFile)) fs.unlinkSync(outputFile);
+  fs.writeFileSync(filepath, code);
 
-        if (runErr) {
-          return res.status(400).json({ output: runStderr || runErr.message });
-        }
+  const command = `g++ "${filepath}" -o "${outputPath}" && "${outputPath}"`;
 
-        res.json({ output: stdout });
-      });
-    });
-  } catch (err) {
-    console.error('Execution error:', err);
-    res.status(500).json({ output: 'Internal Server Error' });
-  }
+  exec(command, (err, stdout, stderr) => {
+    // Cleanup
+    fs.unlinkSync(filepath);
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+
+    if (err || stderr) {
+      return res.json({ success: false, output: stderr || err.message });
+    }
+
+    res.json({ success: true, output: stdout });
+  });
 });
 
+// Start the server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });

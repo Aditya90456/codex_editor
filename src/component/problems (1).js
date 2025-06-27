@@ -1,6 +1,9 @@
 const problems = [
-  { title: "Kadane’s Algorithm (Max Subarray Sum)", link: "https://www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1", tags: ['Arrays', 'Dynamic Programming'], solved: false, attempted: false },
-  { title: "Sort an array of 0s, 1s and 2s", link: "https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s/1", tags: ['Arrays', 'Two Pointer'], solved: false, attempted: false },
+  { title: "Kadane’s Algorithm (Max Subarray Sum)", 
+    link: "https:/www.geeksforgeeks.org/problems/kadanes-algorithm-1587115620/1", 
+    tags: ['Arrays', 'Dynamic Programming'], solved: false, attempted: false },
+  { title: "Sort an array of 0s, 1s and 2s", 
+    link: "https://www.geeksforgeeks.org/problems/sort-an-array-of-0s-1s-and-2s/1", tags: ['Arrays', 'Two Pointer'], solved: false, attempted: false },
   { title: "Subarray with Given Sum", link: "https://www.geeksforgeeks.org/problems/subarray-with-given-sum-1587115621/1", tags: ['Arrays', 'Sliding Window'], solved: false, attempted: false },
   { title: "Majority Element (> N/2 times)", link: "https://www.geeksforgeeks.org/problems/majority-element-1587115620/1", tags: ['Arrays', 'Hashing'], solved: false, attempted: false },
   { title: "Next Permutation", link: "https://www.geeksforgeeks.org/problems/next-permutation5226/1", tags: ['Arrays'], solved: false, attempted: false },
@@ -46,7 +49,6 @@ const problems = [
   { title: "Rearrange Array Alternately", link: "https://www.geeksforgeeks.org/problems/rearrange-array-alternately/1", tags: ['Arrays'], solved: false, attempted: false },
   { title: "Count Pairs with Given Sum", link: "https://www.geeksforgeeks.org/problems/count-pairs-with-given-sum5022/1", tags: ['Hashing'], solved: false, attempted: false },
   { title: "Maximum Sum Increasing Subsequence", link: "https://www.geeksforgeeks.org/problems/maximum-sum-increasing-subsequence4749/1", tags: ['DP'], solved: false, attempted: false },
-  { title: "Find Missing Number", link: "https://www.geeksforgeeks.org/problems/missing-number-in-array1416/1", tags: ['Math'], solved: false, attempted: false },
-];
-
+  { title: "Find Missing Number", link: "https://www.geeksforgeeks.org/problems/missing-number-in-array1416/1", tags: ['Math'], solved: false, attempted: false }
+  ]
 export default problems;

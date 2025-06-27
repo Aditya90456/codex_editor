@@ -19,6 +19,7 @@ function Login() {
       if (response.data.token) {
         localStorage.setItem('authToken', response.data.token);
         alert('✅ Login successful!');
+        window.location.href = "/dashboard"; // ✅ Redirect only after success
       } else {
         setError('Login failed!');
       }
@@ -35,7 +36,7 @@ function Login() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
         whileHover={{ scale: 1.03 }}
-        className="w-full max-w-md bg-black  bg-opacity-10 backdrop-blur-md rounded-lg p-8 shadow-2xl"
+        className="w-full max-w-md bg-black bg-opacity-10 backdrop-blur-md rounded-lg p-8 shadow-2xl"
       >
         <h2 className="text-3xl text-white font-semibold text-center mb-4">Welcome Back 👋</h2>
         <p className="text-gray-300 text-center mb-6">Login to access your dashboard</p>
@@ -80,9 +81,6 @@ function Login() {
           <button
             type="submit"
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition"
-            onClick={()=>{
-          window.location.href = "/dashboard";
-            }}
           >
             Login
           </button>
