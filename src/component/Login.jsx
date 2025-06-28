@@ -3,8 +3,7 @@ import axios from 'axios';
 
 function Login() {
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  const [password, setPassword] = useState(''); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
