@@ -7,9 +7,12 @@ function Navbar() {
   const [username, setUsername] = useState('Guest');
   const [loading, setLoading] = useState(true);
 
+  
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem('authToken');
+
+
       if (!token) {
         setUsername('Guest');
         setLoading(false);
@@ -25,7 +28,7 @@ function Navbar() {
 
         setUsername(res.data.username || 'Guest');
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching user:', error.response?.data || error.message);
         setUsername('Guest');
       } finally {
         setLoading(false);
@@ -34,6 +37,7 @@ function Navbar() {
 
     fetchUser();
   }, []);
+
 
   return (
     <div className="text-white text-[16px] font-bold bg-gray-800 w-full h-16 flex flex-row justify-between items-center px-4 shadow-md">

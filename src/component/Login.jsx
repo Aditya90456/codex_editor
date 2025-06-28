@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post('http://localhost:5000/login', { username, password });
+      const res = await axios.post('http://localhost:5000/login', {
+        username,
+        password,
+      });
 
-      if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token); // Store token
-        alert('✅ Login successful!');
-        window.location.href = "/dashboard"; // Redirect to dashboard
+      const token = res.data.token;
+      if (token) {
+        localStorage.setItem('authToken', token); // ✅ Store the token
+        console.log('Token stored ✅:', token);
+
+        // Redirect to dashboard
+        navigate('/dashboard');
       } else {
-        alert('❌ Login failed. Please check your credentials.');
+        console.error('Login failed: No token received ❌');
       }
-    } catch (error) {
-      console.error('Error during login:', error);
-      alert('❌ An error occurred during login. Please try again.');
+    } catch (err) {
+      console.error('Login error ❌:', err.response?.data?.message || err.message);
     }
   };
 

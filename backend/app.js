@@ -22,16 +22,26 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Connect to DB
+// Connect to MongoDB
 connectDB()
-  .then(() => console.log('✅ Connected to DB'))
+  .then(() => console.log('✅ Connected to MongoDB'))
   .catch((err) => {
-    console.error('❌ DB Error:', err);
+    console.error('❌ MongoDB Error:', err);
     process.exit(1);
   });
 
+// Create a test user once
+(async () => {
+  const existing = await User.findOne({ username: 'testuser' });
+  if (!existing) {
+    const hashed = bcrypt.hashSync('123456', 10);
+    await User.create({ username: 'testuser', password: hashed });
+    console.log('🔥 Test user created: testuser / 123456');
+  }
+})();
+
 /**
- * Read DSA problems from file
+ * 📚 Get All Problems
  */
 app.get('/prob', (req, res) => {
   fs.readFile('./prob(1).js', 'utf8', (err, data) => {
@@ -44,14 +54,14 @@ app.get('/prob', (req, res) => {
       const problems = JSON.parse(data);
       res.json(problems);
     } catch (parseErr) {
-      console.error('Error parsing problems.json:', parseErr);
+      console.error('JSON parse error:', parseErr);
       res.status(500).json({ message: 'JSON parse error' });
     }
   });
 });
 
 /**
- * Signup Route
+ * 📝 Signup
  */
 app.post('/signup', [
   body('username').isString().notEmpty(),
@@ -73,22 +83,21 @@ app.post('/signup', [
 
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = new User({ username, password: hashedPassword });
-    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    newUser.token = token;
     await newUser.save();
 
-    res.status(201).json({ success: true, message: 'User registered successfully' });
+    const token = jwt.sign({ userId: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(201).json({ success: true, message: 'User registered successfully', token, username });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
 /**
- * Login Route
+ * 🔐 Login
  */
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
-
   try {
     const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ success: false, message: 'Invalid credentials' });
@@ -96,40 +105,38 @@ app.post('/login', async (req, res) => {
     const isMatch = bcrypt.compareSync(password, user.password);
     if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: objectId }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.status(200).json({ success: true, token });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ success: true, token, username: user.username });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
 
 /**
- * Logout Route
+ * 🚪 Logout (Frontend should just delete token)
  */
-app.post('/logout', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    user.token = null;
-    await user.save();
-
-    res.json({ message: 'Logged out successfully' });
-  } catch (err) {
-    console.error('Error logging out:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
+app.post('/logout', authenticateToken, (req, res) => {
+  // No real logout in stateless JWT
+  res.json({ message: 'Logged out (client should delete token)' });
 });
 
 /**
- * Get Current User
+ * 👤 Get Current Logged-in User
  */
+// Get Current Logged-in User
 app.get('/user', authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select('-password');
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    // Find the user by ID from the token
+    const user = await User.findById(req.user.userId).select('-password'); // Exclude the password field
 
-    res.json({ username: user.username, objectId: user._id });
+    res.json({ username: user.username, ObjectID: user._id });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with the user's username and ID
+    res.json({ username: user.username, ObjectID: user._id });
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).json({ message: 'Server error' });
@@ -137,7 +144,7 @@ app.get('/user', authenticateToken, async (req, res) => {
 });
 
 /**
- * Protected Content Route
+ * 🔒 Protected Route Test
  */
 app.get('/protected', authenticateToken, async (req, res) => {
   try {
@@ -151,46 +158,51 @@ app.get('/protected', authenticateToken, async (req, res) => {
 });
 
 /**
- * Run C++ Code Route
+ * ⚙️ Run C++ Code
  */
 app.post('/run', (req, res) => {
   const { code } = req.body;
 
-  // Validate input
-  if (!code) {
-    return res.status(400).json({ output: 'No code provided' });
-  }
+  if (!code) return res.status(400).json({ output: '❌ No code provided' });
 
-  // Generate unique filenames for the source code and executable
+  // Generate unique filenames
   const filename = `${uuid()}.cpp`;
+  const executable = `${uuid()}.exe`;
   const filepath = path.join(__dirname, filename);
-  const outputPath = path.join(__dirname, `${uuid()}.exe`); // Use `.out` for Linux
+  const outputPath = path.join(__dirname, executable);
 
-  // Write the code to a temporary file
+  // Write the code to a temporary .cpp file
   fs.writeFileSync(filepath, code);
 
-  // Command to compile and execute the C++ code
+  // Compile and run the C++ code
   const command = `g++ "${filepath}" -o "${outputPath}" && "${outputPath}"`;
 
   exec(command, { timeout: 5000 }, (err, stdout, stderr) => {
-    // Cleanup temporary files
-    fs.unlinkSync(filepath);
-    if (fs.existsSync(outputPath)) {
-      fs.unlinkSync(outputPath);
+    // Always clean up
+    try {
+      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
+      if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+    } catch (cleanupErr) {
+      console.error('⚠️ Cleanup error:', cleanupErr);
     }
 
-    // Handle errors
+    // If there was an error (compilation or runtime)
     if (err || stderr) {
-      return res.json({ success: false, output: stderr || err.message });
+      return res.json({
+        success: false,
+        output: stderr || err.message
+      });
     }
 
-    // Return the output of the executed code
-    res.json({ success: true, output: stdout });
+    // Return output
+    return res.json({
+      success: true,
+      output: stdout
+    });
   });
 });
-
 /**
- * Start Server
+ * 🚀 Start Server
  */
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
