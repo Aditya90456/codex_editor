@@ -8,7 +8,7 @@ function CppEditor() {
 
   const runCode = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/run-cpp', { code });
+      const response = await axios.post('http://localhost:5000/run', { code });
       setOutput(response.data.output);
     } catch (error) {
       if (error.response) {
