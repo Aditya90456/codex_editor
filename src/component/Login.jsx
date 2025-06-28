@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -21,7 +20,7 @@ function Login() {
         console.log('Token stored ✅:', token);
 
         // Redirect to dashboard
-        navigate('/dashboard');
+        window.location.href = '/dashboard';  
       } else {
         console.error('Login failed: No token received ❌');
       }
