@@ -1,91 +1,56 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import Axios from 'axios';
+import axios from 'axios';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+
     try {
-      const response = await Axios.post('http://localhost:5000/login', {
-        username,
-        password,
-      });
+      const response = await axios.post('http://localhost:5000/login', { username, password });
 
       if (response.data.token) {
-        localStorage.setItem('authToken', response.data.token);
+        localStorage.setItem('authToken', response.data.token); // Store token
         alert('✅ Login successful!');
-        window.location.href = "/dashboard"; // ✅ Redirect only after success
+        window.location.href = "/dashboard"; // Redirect to dashboard
       } else {
-        setError('Login failed!');
+        alert('❌ Login failed. Please check your credentials.');
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'Server error');
-      console.error('Login error:', error.response || error.message);
+      console.error('Error during login:', error);
+      alert('❌ An error occurred during login. Please try again.');
     }
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-r from-gray-900 to-gray-800">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8 }}
-        whileHover={{ scale: 1.03 }}
-        className="w-full max-w-md bg-black bg-opacity-10 backdrop-blur-md rounded-lg p-8 shadow-2xl"
-      >
-        <h2 className="text-3xl text-white font-semibold text-center mb-4">Welcome Back 👋</h2>
-        <p className="text-gray-300 text-center mb-6">Login to access your dashboard</p>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="username" className="text-gray-300 block mb-1">
-              Username
-            </label>
-            <input
-              type="text"
-              id="username"
-              className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-6">
-            <label htmlFor="password" className="text-gray-300 block mb-1">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              className="w-full px-4 py-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && (
-            <div className="mb-4 text-red-400 text-sm text-center">
-              ❌ {error}
-            </div>
-          )}
-
+    <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
+      <div className="bg-black bg-opacity-30 backdrop-blur-md rounded-lg p-8 shadow-2xl">
+        <h1 className="text-3xl font-bold text-white text-center mb-6">Login</h1>
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="p-2 rounded-lg bg-gray-800 text-white"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-2 rounded-lg bg-gray-800 text-white"
+          />
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
           >
             Login
           </button>
         </form>
-      </motion.div>
+      </div>
     </div>
   );
 }
