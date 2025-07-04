@@ -25,7 +25,7 @@ function CodeEditor() {
   return (
     <div className="w-full h-screen bg-gray-900 flex flex-col">
       {/* Header */}
-      <div className="w-full h-16 bg-gray-800 flex items-center justify-between px-6">
+      <div className="w-full h-16 bg-gray-800 flex items-center justify-center relative top-13 py-6 px-6">
         <h1 className="text-white text-2xl font-bold text-center">Web development editor</h1>
         <button
           onClick={runCode}
@@ -37,8 +37,7 @@ function CodeEditor() {
 
       {/* Editor Section */}
       <div className="flex flex-row w-full h-2/3">
-        <div className="w-1/3 h-full 
-        bg-gray-800 p-4">
+        <div className="w-1/3 h-full bg-gray-800 p-4">
           <h2 className="text-white text-lg font-bold mb-2">HTML</h2>
           <Editor
             defaultLanguage="html"

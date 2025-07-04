@@ -12,53 +12,22 @@ require('dotenv').config();
 
 const connectDB = require('./db');
 const User = require('./models/User');
+const Problem = require('./models/problem');
 const authenticateToken = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// Connect to MongoDB
 connectDB()
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch((err) => {
     console.error('❌ MongoDB Error:', err);
     process.exit(1);
   });
-
-// Create a test user once
-(async () => {
-  const existing = await User.findOne({ username: 'testuser' });
-  if (!existing) {
-    const hashed = bcrypt.hashSync('123456', 10);
-    await User.create({ username: 'testuser', password: hashed });
-    console.log('🔥 Test user created: testuser / 123456');
-  }
-})();
-
-/**
- * 📚 Get All Problems
- */
-app.get('/prob', (req, res) => {
-  fs.readFile('./prob(1).js', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading problems:', err);
-      return res.status(500).json({ message: 'Server error' });
-    }
-
-    try {
-      const problems = JSON.parse(data);
-      res.json(problems);
-    } catch (parseErr) {
-      console.error('JSON parse error:', parseErr);
-      res.status(500).json({ message: 'JSON parse error' });
-    }
-  });
-});
 
 /**
  * 📝 Signup
@@ -114,47 +83,26 @@ app.post('/login', async (req, res) => {
 });
 
 /**
- * 🚪 Logout (Frontend should just delete token)
- */
-app.post('/logout', authenticateToken, (req, res) => {
-  // No real logout in stateless JWT
-  res.json({ message: 'Logged out (client should delete token)' });
-});
-
-/**
  * 👤 Get Current Logged-in User
  */
-// Get Current Logged-in User
 app.get('/user', authenticateToken, async (req, res) => {
-  try {
-    // Find the user by ID from the token
-    const user = await User.findById(req.user.userId).select('-password'); // Exclude the password field
-
-    res.json({ username: user.username, ObjectID: user._id });
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Respond with the user's username and ID
-    res.json({ username: user.username, ObjectID: user._id });
-  } catch (err) {
-    console.error('Error fetching user:', err);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
-
-/**
- * 🔒 Protected Route Test
- */
-app.get('/protected', authenticateToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    res.json({ message: 'Protected content', user });
+    // Return user details without password   
+
+    res.json({ username: user.username, ObjectId: user._id });
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
+});
+
+/**
+ * 🚪 Logout
+ */
+app.post('/logout', authenticateToken, (req, res) => {
+  res.json({ message: 'Logged out (client should delete token)' });
 });
 
 /**
@@ -163,44 +111,132 @@ app.get('/protected', authenticateToken, async (req, res) => {
 app.post('/run', (req, res) => {
   const { code } = req.body;
 
-  if (!code) return res.status(400).json({ output: '❌ No code provided' });
+  if (!code) return res.status(400).json({ output: 'No code provided' });
 
-  // Generate unique filenames
   const filename = `${uuid()}.cpp`;
-  const executable = `${uuid()}.exe`;
   const filepath = path.join(__dirname, filename);
-  const outputPath = path.join(__dirname, executable);
+  const outputPath = path.join(__dirname, `${uuid()}.exe`);
 
-  // Write the code to a temporary .cpp file
   fs.writeFileSync(filepath, code);
 
-  // Compile and run the C++ code
   const command = `g++ "${filepath}" -o "${outputPath}" && "${outputPath}"`;
 
   exec(command, { timeout: 5000 }, (err, stdout, stderr) => {
-    // Always clean up
-    try {
-      if (fs.existsSync(filepath)) fs.unlinkSync(filepath);
-      if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
-    } catch (cleanupErr) {
-      console.error('⚠️ Cleanup error:', cleanupErr);
+    fs.unlinkSync(filepath);
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath);
+
+    if (err || stderr) {
+      return res.json({ success: false, output: stderr || err.message });
     }
 
-    // If there was an error (compilation or runtime)
-    if (err || stderr) {
-      return res.json({
-        success: false,
-        output: stderr || err.message
+    res.json({ success: true, output: stdout });
+  });
+});
+
+/**
+ * 🧠 Update Problem Status
+ */
+/**
+ * 🌱 Seed test user
+ */
+(async () => {
+  const existing = await User.findOne({ username: 'testuser' });
+  if (!existing) {
+    const hashed = bcrypt.hashSync('123456', 10);
+    await User.create({ username: 'testuser', password: hashed });
+    console.log('🔥 Test user created: testuser / 123456');
+  }
+})();
+app.post('/prob', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  const { title, solved, attempted, tags, link } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ message: 'Title is required' });
+  }
+
+  try {
+    const normalizedTitle = title.trim().toLowerCase();
+    const tagsArray = Array.isArray(tags)
+      ? tags
+      : tags?.split(',').map((tag) => tag.trim());
+
+    const updatedProblem = await Problem.findOneAndUpdate(
+      { userId, title: normalizedTitle },
+      {
+        $set: {
+          solved,
+          attempted,
+          tags: tagsArray,
+          link,
+          title: normalizedTitle // save normalized title
+        }
+      },
+      {
+        upsert: true,
+        new: true,
+        collation: { locale: 'en', strength: 2 } // case-insensitive matching
+      }
+    );
+
+    const allProblems = await Problem.find({ userId });
+    const { total, solved: solvedCount, progress } = calculateProgress(allProblems);
+
+    res.json({
+      message: 'Problem saved successfully',
+      progress,
+      total,
+      solved: solvedCount,
+      updatedProblem
+    });
+  } catch (error) {
+    console.error('❌ Error in POST /prob:', error);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Duplicate problem detected for this user',
+        error: error.keyValue
       });
     }
 
-    // Return output
-    return res.json({
-      success: true,
-      output: stdout
-    });
-  });
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
 });
+app.get('/prob', authenticateToken, async (req, res) => { 
+
+  const userId = req.user.userId;
+
+  try {
+    const allProblems = await Problem.find({ userId });
+    const { total, solved, progress } = calculateProgress(allProblems);
+
+    res.json({
+      message: 'Problems retrieved successfully',
+      progress,
+      total,
+      solved,
+      problems: allProblems
+    });
+  } catch (error) {
+    console.error('❌ Error in GET /prob:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
+);
+
+// Helper to calculate progress
+function calculateProgress(problems) {
+  const total = problems.length;
+  const solved = problems.reduce((acc, p) => acc + (p.solved ? 1 : 0), 0);
+  const progress = total ? Math.round((solved / total) * 100) : 0;
+  return { total, solved, progress };
+}
+
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 /**
  * 🚀 Start Server
  */

@@ -1,136 +1,160 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import axios from 'axios';
-import problems from './problems (1)'; // Your local problems array
+import fallbackProblems from './problems (1).js'; // Local 300 problems
 
 function Prob() {
-  const [problem, setProblem] = useState(problems);
+  const [problem, setProblem] = useState(fallbackProblems);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  const solved = useMemo(() => problem.filter((p) => p.solved).length, [problem]);
+  const total = problem.length;
+  const progress = useMemo(() => Math.round((solved / total) * 100), [solved, total]);
+
+  const filteredProblems = useMemo(() => {
+    return problem.filter((p) =>
+      p.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, problem]);
+
+  useEffect(() => {
+    const fetchUserProblems = async () => {
+      const auth = localStorage.getItem('authToken');
+      if (!auth) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await axios.get('http://localhost:5000/prob', {
+          headers: { Authorization: `Bearer ${auth}` },
+        });
+
+        const userProblems = res.data.problems || [];
+        const updatedProblems = fallbackProblems.map((p) => {
+          const saved = userProblems.find(
+            (u) => u.title?.toLowerCase() === p.title?.toLowerCase()
+          );
+          return saved
+            ? { ...p, solved: saved.solved, attempted: saved.attempted }
+            : p;
+        });
+
+        setProblem(updatedProblems);
+        console.log('✅ User progress loaded');
+      } catch (err) {
+        console.error('❌ Fetch error:', err.response?.data || err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProblems();
+  }, []);
 
   const handleCheckboxChange = async (index, field) => {
     const updatedProblems = [...problem];
     updatedProblems[index][field] = !updatedProblems[index][field];
-    setProblem(updatedProblems);
+    setProblem(updatedProblems); // Optimistic UI
 
+    const auth = localStorage.getItem('authToken');
     try {
-      await axios.put('http://localhost:5000/update-problem-status', {
-        problemTitle: updatedProblems[index].title,
-        solved: updatedProblems[index].solved,
-        attempted: updatedProblems[index].attempted,
-      });
-
-      console.log('✅ Data updated successfully');
-    } catch (error) {
-      console.error('❌ Error saving data:', error);
+      await axios.post(
+        'http://localhost:5000/prob',
+        {
+          title: updatedProblems[index].title,
+          solved: updatedProblems[index].solved,
+          attempted: updatedProblems[index].attempted,
+          tags: updatedProblems[index].tags,
+          link: updatedProblems[index].link,
+        },
+        { headers: { Authorization: `Bearer ${auth}` } }
+      );
+      console.log('✅ Progress saved');
+    } catch (err) {
+      console.error('❌ Save failed:', err.response?.data || err.message);
+      // Rollback if error
+      updatedProblems[index][field] = !updatedProblems[index][field];
+      setProblem(updatedProblems);
     }
   };
 
-  const total = problem.length;
-  const solved = problem.filter((p) => p.solved).length;
-  const progress = total > 0 ? (solved / total) * 100 : 0;
-
-  const filteredProblems = problem.filter((p) =>
-    p.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  if (progress === 100 && total > 0) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-4">
-        <p className="text-white text-3xl font-bold mt-20">🎉 Congrats! You solved all the problems!</p>
-      </div>
-    );
-  }
-
-  if (total === 0) {
-    return (
-      <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-4">
-        <p className="text-white text-lg">No problems available. Please add some problems.</p>
+      <div className="flex justify-center items-center h-screen bg-gray-900 text-white">
+        <h1 className="text-2xl font-bold">Loading your problems...</h1>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 p-4">
-      <div className="w-full max-w-6xl bg-black bg-opacity-30 backdrop-blur-md rounded-lg p-8 shadow-2xl mt-10">
+    <div className="p-6 text-white bg-gray-900  py-17 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-4">Codex DSA Problem Set</h1>
 
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-white text-center mb-6">
-          Codex DSA Problem Set
-        </h1>
+      {/* Search */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="🔍 Search problems..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
 
-        {/* Progress Bar */}
-        <div className="mb-6">
-          <div className="flex justify-between text-white mb-1 text-sm">
-            <span>Solved: {solved} / {total}</span>
-            <span>{Math.round(progress)}%</span>
-          </div>
-          <div className="w-full h-4 bg-gray-700 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-green-500 transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
+      {/* Progress Bar */}
+      <div className="mb-6">
+        <div className="flex justify-between mb-1">
+          <span>Solved: {solved}/{total}</span>
+          <span>{progress}%</span>
         </div>
-
-        {/* Search Bar */}
-        <div className="mb-6">
-          <input
-            type="text"
-            placeholder="Search problems by title..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 rounded-md border border-gray-600 bg-gray-900 text-white placeholder-gray-400"
-          />
+        <div className="w-full bg-gray-700 rounded h-3">
+          <div
+            className="h-full bg-green-500 rounded transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          ></div>
         </div>
+      </div>
 
-        {/* Problem Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProblems.map((p, index) => (
-            <div
-              key={index}
-              className="bg-gray-800 p-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
+      {/* Problems */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredProblems.map((p, index) => (
+          <div
+            key={p.title}
+            className={`p-4 rounded shadow-lg transition-transform duration-200 hover:scale-105
+            ${p.solved ? 'bg-green-800' : p.attempted ? 'bg-yellow-700' : 'bg-gray-800'}`}
+          >
+            <h2 className="text-xl font-semibold">{p.title}</h2>
+            <a
+              href={p.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 underline"
             >
-              <h2 className="text-xl font-bold text-white mb-2">{p.title}</h2>
-              <a
-                href={p.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:underline mb-2 inline-block"
-              >
-                View Problem on GFG
-              </a>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {p.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-gray-700 text-xs font-medium py-1 px-2 rounded-full text-gray-300"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              <div className="flex items-center gap-4">
-                <label className="flex items-center text-gray-300">
-                  <input
-                    type="checkbox"
-                    checked={p.solved}
-                    onChange={() => handleCheckboxChange(index, 'solved')}
-                    className="mr-2"
-                  />
-                  Solved
-                </label>
-                <label className="flex items-center text-gray-300">
-                  <input
-                    type="checkbox"
-                    checked={p.attempted}
-                    onChange={() => handleCheckboxChange(index, 'attempted')}
-                    className="mr-2"
-                  />
-                  Attempted
-                </label>
-              </div>
+              View on GFG
+            </a>
+            <div className="mt-3 flex gap-4">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={p.solved}
+                  onChange={() => handleCheckboxChange(index, 'solved')}
+                  className="mr-1"
+                />
+                Solved
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={p.attempted}
+                  onChange={() => handleCheckboxChange(index, 'attempted')}
+                  className="mr-1"
+                />
+                Attempted
+              </label>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );

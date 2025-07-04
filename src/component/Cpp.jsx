@@ -1,39 +1,42 @@
-import React, { useState } from 'react'
-import Editor from '@monaco-editor/react'
-import axios from 'axios'
+import React, { useState } from 'react';
+import Editor from '@monaco-editor/react';
+import axios from 'axios';
 
 function CppEditor() {
-  const [code, setCode] = useState('#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello, World!";\n    return 0;\n}')
-  const [output, setOutput] = useState('')
+  const [code, setCode] = useState(`#include <iostream>\nusing namespace std;\n\nint main() {\n    cout << "Hello, World!";\n    return 0;\n}`);
+  const [output, setOutput] = useState('');
 
   const runCode = async () => {
+    setOutput('Running...');
     try {
       const response = await axios.post('http://localhost:5000/run', { code });
       setOutput(response.data.output);
-    } catch (error) {
-      if (error.response) {
-        setOutput(error.response.data.output); // Backend error
-      } else {
-        setOutput('Network error: ' + error.message); // Network error
-      }
+    } catch (err) {
+      setOutput('Error: ' + (err.response?.data?.output || err.message));
     }
-  }
+  };
 
   return (
-    <div className="w-full h-screen bg-gray-900 flex flex-col">
-      {/* Header */}
-      <div className="w-full h-16 bg-gray-800 flex items-center justify-between px-6">
-        <h1 className="text-white text-2xl font-bold">C++ Editor</h1>
-        <button
-          onClick={runCode}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-        >
-          Run Code
-        </button>
+    <div className="w-full h-screen flex justify-between items-center bg-gray-900 text-white">
+      
+      {/* Left Side: Output */}
+      <div className="w-1/3 bg-gray-800 border-r border-gray-700 p-4 flex flex-col">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-lg font-semibold">Output</h2>
+          <button
+            onClick={runCode}
+            className="bg-green-500 hover:bg-green-600 text-white font-medium px-3 py-1 rounded"
+          >
+            Run Code
+          </button>
+        </div>
+        <div className="bg-black rounded p-3 text-green-400 text-sm font-mono flex-1 overflow-y-auto">
+          <pre>{output}</pre>
+        </div>
       </div>
 
-      {/* Editor Section */}
-      <div className="flex-1 bg-gray-800 p-4">
+      {/* Right Side: Editor */}
+      <div className="flex-1 h-full p-4 relative top-12 left-0">
         <Editor
           height="100%"
           language="cpp"
@@ -43,21 +46,15 @@ function CppEditor() {
           options={{
             fontSize: 14,
             minimap: { enabled: false },
-            wordWrap: 'on',
             automaticLayout: true,
+            scrollBeyondLastLine: false,
+            wordWrap: 'on', 
+            height: '78%',       
           }}
         />
       </div>
-
-      {/* Output Section */}
-      <div className="w-full h-1/3 bg-gray-900 p-4">
-        <h2 className="text-white text-lg font-bold mb-2">Output</h2>
-        <div className="w-full h-full bg-gray-800 text-white p-4 rounded overflow-auto">
-          <pre className='text-xs  text-white'>{output}</pre>
-        </div>
-      </div>
     </div>
-  )
+  );
 }
 
-export default CppEditor
+export default CppEditor;

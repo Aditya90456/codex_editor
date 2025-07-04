@@ -1,63 +1,68 @@
 import React from 'react';
+import { FiExternalLink } from 'react-icons/fi';
 
 const articles = [
   {
-    title: 'Understanding Arrays in JavaScript',
-    description: 'Learn the basics of arrays and their operations in JavaScript.',
-    tags: ['JavaScript', 'Arrays', 'Programming'],
-    link: 'https://www.geeksforgeeks.org/dsa/array-data-structure-guide/',
+    title: 'Hashing in Data Structures',
+    description: 'A comprehensive guide to Hashing in Data Structures with examples and applications.',
+    tags: ['DSA', 'Hashing', 'GeeksforGeeks'],
+    link: 'https://www.geeksforgeeks.org/dsa/hashing-data-structure/',
   },
   {
-    title: 'Introduction to Dynamic Programming',
-    description: 'A beginner-friendly guide to dynamic programming concepts.',
-    tags: ['Dynamic Programming', 'Algorithms'],
-    link: 'https://www.geeksforgeeks.org/dsa/introduction-to-dynamic-programming/',
+    title: 'Arrays in C++',
+    description: 'Learn about arrays in C++ and how to use them effectively.',
+    tags: ['C++', 'Arrays', 'Programming'],
+    link: 'https://www.geeksforgeeks.org/arrays-in-c-cpp/',
   },
   {
-    title: 'Sorting Algorithms Explained',
-    description: 'Understand various sorting algorithms with examples.',
-    tags: ['Sorting', 'Algorithms', 'Data Structures'],
-    link: 'https://www.geeksforgeeks.org/dsa/sorting-algorithms-explained/',
+    title: 'Dynamic Programming Basics',
+    description: 'Get started with Dynamic Programming concepts and solve problems efficiently.',
+    tags: ['DSA', 'Dynamic Programming'],
+    link: 'https://www.geeksforgeeks.org/dynamic-programming/',
   },
+  // 👉 Repeat for all 250 articles
 ];
 
 function Liya() {
   return (
-    <div className="flex flex-col items-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
-      <div className="w-full max-w-6xl bg-black bg-opacity-30 backdrop-blur-md rounded-lg p-8 shadow-2xl mt-10">
-        <h1 className="text-4xl font-bold text-white text-center mb-8">Explore GFG Articles</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.length > 0 ? (
-            articles.map((article, index) => (
-              <div
-                key={index}
-                className="bg-gray-800 p-6 rounded-lg shadow-lg hover:bg-gray-700 transition duration-300"
-              >
-                <h2 className="text-xl font-bold text-white mb-2">{article.title}</h2>
-                <p className="text-sm text-gray-300 mb-4">{article.description}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {article.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-700 text-xs font-medium py-1 px-2 rounded-full text-gray-300"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-                <a
-                  href={article.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
-                >
-                  Read Article on GFG
-                </a>
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-8">
+      <div className="w-full max-w-7xl bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
+        <h1 className="text-3xl font-extrabold text-center text-white mb-6">
+          🚀 DSA Articles on GeeksforGeeks
+        </h1>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {articles.map((article, index) => (
+            <div
+              key={index}
+              className="bg-gray-900 rounded-xl p-4 shadow-md hover:shadow-green-400/40 hover:scale-105 transition duration-300"
+            >
+              <h2 className="text-lg font-bold text-white mb-2 truncate">{article.title}</h2>
+              <p className="text-gray-400 text-sm mb-3 line-clamp-2">
+                {article.description}
+              </p>
+
+              <div className="flex flex-wrap gap-1 mb-3">
+                {article.tags.map((tag, i) => (
+                  <span
+                    key={i}
+                    className="bg-green-500 text-black text-xs font-semibold py-0.5 px-2 rounded-full"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-gray-300 text-center">No articles available</p>
-          )}
+
+              <a
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-400 hover:text-blue-300 text-sm font-medium"
+              >
+                Read Article <FiExternalLink className="ml-1" />
+              </a>
+            </div>
+          ))}
         </div>
       </div>
     </div>
