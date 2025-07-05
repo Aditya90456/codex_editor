@@ -25,7 +25,7 @@ function Login() {
       if (token) {
         localStorage.setItem('authToken', token);
         console.log('✅ Token stored:', token);
-        navigate('/dashboard');
+       window.location.href = '/';
       } else {
         setError('Login failed: No token received ❌');
       }
