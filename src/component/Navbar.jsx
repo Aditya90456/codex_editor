@@ -51,6 +51,7 @@ function Navbar() {
         <Link to="/editor" className="hover:text-cyan-400 transition duration-300">Web Dev Editor</Link>
         <Link to="/cpp" className="hover:text-cyan-400 transition duration-300">C++ Editor</Link>
         <Link to="/AI-Topic-Guide" className="hover:text-cyan-400 transition duration-300">DSA Guide</Link>
+        <Link to="/mentorship" className="hover:text-cyan-400 transition duration-300">Mentorship AI Program </Link>
       </div>
 
       {/* User Info */}

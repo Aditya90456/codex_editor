@@ -15,6 +15,7 @@ import Login from './component/Login'
 import Signup from './component/Signup'
 import Dashboard from './component/Dashboard'
 import Logout from './component/Logout'
+import Mentorship from './component/Mentorship'
 
 function App() {
   const router = createBrowserRouter([
@@ -237,6 +238,53 @@ function App() {
             transition={{ duration: 0.5 }}
           > 
             <Logout />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/mentorship',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Mentorship />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/ai',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
+              <h1 className="text-4xl text-white font-bold mb-4">AI Mentorship Program</h1>
+              <p className="text-white text-lg mb-4">Coming Soon</p>
+            </div>
           </motion.div>
         </motion.div>
       </>

@@ -232,7 +232,26 @@ function calculateProgress(problems) {
   return { total, solved, progress };
 }
 
+app.get('/dashboard', authenticateToken, async (req, res) => {  
 
+  const userId = req.user.userId; 
+  try {
+    const problems = await Problem.find({ userId });
+    const { total, solved, progress } = calculateProgress(problems);
+
+    res.json({
+      message: 'Dashboard data retrieved successfully',
+      progress,
+      total,
+      solved,
+      problems
+    });
+  } catch (error) {
+    console.error('❌ Error in GET /dashboard:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+}
+);
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
