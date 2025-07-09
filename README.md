@@ -1,12 +1,28 @@
-# React + Vite
+🚀 Codex – The Smart DSA Problem Tracker & Code Editor
+Codex is a full-stack DSA problem-solving platform that helps you practice, track, and improve your coding skills. Built with React, Express.js, and MongoDB, it combines a sleek interface with powerful features like:
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✅ Problem tracking (solved, attempted, unsolved)
+✅ Daily streaks & progress visualization
+✅ Secure JWT authentication
+✅ In-browser C++ code execution
+✅ Clean, responsive design with TailwindCSS
 
-Currently, two official plugins are available:
+✨ Features
+📋 280+ curated DSA problems (TUF style, GFG links included)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+🔥 Progress tracking (solved, attempted, daily streaks)
 
-## Expanding the ESLint configuration
+📝 Built-in code editor (C++, JavaScript support with syntax highlighting)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+🔒 JWT Authentication (secure login & protected dashboard)
+
+📊 Dashboard showing overall and topic-wise progress
+
+🛠️ Tech Stack
+Frontend: React, TailwindCSS, Framer Motion
+
+Backend: Node.js, Express.js, MongoDB
+
+Authentication: JWT, bcrypt
+
+Deployment: Vercel (frontend) & Render (backend)
