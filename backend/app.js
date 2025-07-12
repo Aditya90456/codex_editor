@@ -38,6 +38,44 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 // 🟢 Connect MongoDB
+app.post('/run', async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: 'Code is required' });
+
+  const id = uuid();
+  const fileName = `temp_${id}.cpp`;
+  const outputFile = `temp_${id}${process.platform === 'win32' ? '.exe' : '.out'}`;
+
+  // Write C++ code to temp file
+  fs.writeFile(fileName, code, (err) => {
+    if (err) {
+      console.error('❌ File write error:', err);
+      return res.status(500).json({ message: 'Error writing file' });
+    }
+
+    // Compile and execute with timeout (5 seconds)
+    const cmd = `g++ ${fileName} -o ${outputFile} && ./${outputFile}`;
+    exec(cmd, { timeout: 5000 }, (error, stdout, stderr) => {
+      // Always clean up temp files
+      fs.unlink(fileName, () => {});
+      fs.unlink(outputFile, () => {});
+
+      if (error) {
+        console.error('❌ Compilation/Execution error:', stderr || error.message);
+
+        // Check if it's a timeout
+        if (error.killed) {
+          return res.status(500).json({ output: '⏳ Execution timed out (possible infinite loop).' });
+        }
+
+        return res.status(500).json({ output: stderr || error.message });
+      }
+
+      res.json({ output: stdout || '✅ Program executed successfully. No output.' });
+    });
+  });
+});
+
 connectDB()
   .then(() => console.log('✅ MongoDB Connected'))
   .catch((err) => {
