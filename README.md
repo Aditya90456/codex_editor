@@ -1,28 +1,45 @@
-🚀 Codex – The Smart DSA Problem Tracker & Code Editor
-Codex is a full-stack DSA problem-solving platform that helps you practice, track, and improve your coding skills. Built with React, Express.js, and MongoDB, it combines a sleek interface with powerful features like:
+🚀 CodeX Editor
+Your go-to platform for Web Development & C++ coding with AI-powered mentorship! ✨
 
-✅ Problem tracking (solved, attempted, unsolved)
-✅ Daily streaks & progress visualization
-✅ Secure JWT authentication
-✅ In-browser C++ code execution
-✅ Clean, responsive design with TailwindCSS
+<!-- (Replace with your banner image URL) -->
 
-✨ Features
-📋 280+ curated DSA problems (TUF style, GFG links included)
+🌟 Features
+✅ Web Dev Editor – Write, edit & run HTML/CSS/JS code in real-time.
+✅ C++ Editor – Compile & execute C++ programs directly in the browser.
+✅ AI Mentor – Get instant coding help, suggestions & explanations powered by AI.
+✅ Responsive UI – Smooth experience across all devices.
+✅ User Authentication – Secure signup/login system for personalized experience.
 
-🔥 Progress tracking (solved, attempted, daily streaks)
+🖥️ Live Demo
+👉 Try CodeX Now
 
-📝 Built-in code editor (C++, JavaScript support with syntax highlighting)
+📸 Screenshots
 
-🔒 JWT Authentication (secure login & protected dashboard)
+Welcome screen of CodeX with access to Web Dev & C++ editors.
 
-📊 Dashboard showing overall and topic-wise progress
+🚀 Tech Stack
+Frontend: React.js, Tailwind CSS, Framer Motion
 
-🛠️ Tech Stack
-Frontend: React, TailwindCSS, Framer Motion
+Backend: Express.js, Node.js, MongoDB
 
-Backend: Node.js, Express.js, MongoDB
+Authentication: JWT (JSON Web Token)
 
-Authentication: JWT, bcrypt
+AI Integration: OpenAI / Gemini API
 
-Deployment: Vercel (frontend) & Render (backend)
+Deployment: Vercel (Frontend) & Render (Backend)
+
+📦 Installation
+bash
+Copy
+Edit
+# Clone the repository
+git clone https://github.com/Aditya90456/codex_editor.git
+
+# Navigate to project directory
+cd codex_editor
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
