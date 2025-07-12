@@ -16,6 +16,7 @@ import Signup from './component/Signup'
 import Dashboard from './component/Dashboard'
 import Logout from './component/Logout'
 import Mentorship from './component/Mentorship'
+import AI from './component/AI'
 
 function App() {
   const router = createBrowserRouter([
@@ -281,10 +282,7 @@ function App() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900">
-              <h1 className="text-4xl text-white font-bold mb-4">AI Mentorship Program</h1>
-              <p className="text-white text-lg mb-4">Coming Soon</p>
-            </div>
+            <AI />
           </motion.div>
         </motion.div>
       </>
