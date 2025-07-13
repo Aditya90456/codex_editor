@@ -17,7 +17,8 @@ import Dashboard from './component/Dashboard'
 import Logout from './component/Logout'
 import Mentorship from './component/Mentorship'
 import AI from './component/AI'
-
+import Python from './component/Python'
+import JavaScriptEditor from './component/Js'
 function App() {
   const router = createBrowserRouter([
     {
@@ -285,6 +286,50 @@ function App() {
             <AI />
           </motion.div>
         </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/python',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Python />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/js',
+    element: (  
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}  
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }} 
+          transition={{ duration: 0.5 }}  
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}  
+          >
+            <JavaScriptEditor />
+            </motion.div>
+          </motion.div>
       </>
     )
   }

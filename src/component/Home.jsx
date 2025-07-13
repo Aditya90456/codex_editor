@@ -1,63 +1,151 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { FaHtml5 } from 'react-icons/fa6'
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { FaHtml5, FaPython, FaJsSquare } from 'react-icons/fa'
 import { CgCPlusPlus } from 'react-icons/cg'
 import { motion } from 'framer-motion'
+import axios from 'axios'
 import Array from './Array'
 
 function Home() {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('authToken')
+        if (!token) {
+          setLoading(false)
+          return
+        }
+
+        const res = await axios.get('http://localhost:5000/api/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+
+        setUser(res.data.username || 'Guest')
+      } catch (err) {
+        console.error('User not logged in:', err.message)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex justify-center items-center bg-gray-900 text-white">
+        <h1 className="text-3xl font-bold">Loading...</h1>
+      </div>
+    )
+  }
+
   return (
     <>
-      <div className="w-full min-h-screen bg-gradient-to-r from-gray-800 via-gray-900 to-black text-white flex flex-col justify-center items-center relative">
-        {/* Welcome Section */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-          className="backdrop-blur-md bg-gray-800/60 border border-gray-700 shadow-2xl rounded-3xl p-8 md:p-12 text-center max-w-xl"
+      {/* Hero Section */}
+      <div className="relative w-full min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white flex flex-col justify-center items-center text-center px-4 overflow-hidden">
+        {/* Floating Blobs */}
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute top-20 right-20 w-72 h-72 bg-yellow-400 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+          className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-8"
         >
-          <motion.h1
-            initial={{ opacity: 0, y: -40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, type: 'spring', stiffness: 120 }}
-            className="text-4xl md:text-5xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500"
-          >
-            Welcome to CodeX
-          </motion.h1>
+          🚀 Welcome {user ? `${user}` : 'to CodeX'}
+        </motion.h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg md:text-xl text-gray-300 mb-6"
-          >
-            Your go-to platform for Web Development & C++ coding.
-          </motion.p>
+        {user && (
+          <p className="text-lg md:text-xl text-gray-200 mb-8">
+            You're <span className="text-green-400 font-bold">{user.progress}%</span> done with your DSA journey.
+          </p>
+        )}
 
-          <div className="flex flex-wrap justify-center gap-4">
+        {/* Editor Cards Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 w-full max-w-6xl">
+          {/* Web Dev */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+          >
+            <FaHtml5 className="text-orange-400 text-5xl mb-4" />
+            <h3 className="text-xl font-bold mb-2">Web Dev Editor</h3>
+            <p className="text-gray-300 mb-4">
+              Build and test HTML, CSS, and JS projects directly in your browser.
+            </p>
             <Link
               to="/editor"
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="mt-auto bg-gradient-to-br from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
             >
-              <FaHtml5 className="h-5 w-5" />
-              Web Dev Editor
+              Launch
             </Link>
+          </motion.div>
 
+          {/* C++ */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+          >
+            <CgCPlusPlus className="text-blue-400 text-5xl mb-4" />
+            <h3 className="text-xl font-bold mb-2">C++ Editor</h3>
+            <p className="text-gray-300 mb-4">
+              Compile and run C++ code with ease and lightning speed.
+            </p>
             <Link
               to="/cpp"
-              className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="mt-auto bg-gradient-to-br from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
             >
-              <CgCPlusPlus className="h-5 w-5" />
-              C++ Editor
+              Launch
             </Link>
-          </div>
-        </motion.div>
+          </motion.div>
+
+          {/* Python */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+          >
+            <FaPython className="text-yellow-400 text-5xl mb-4" />
+            <h3 className="text-xl font-bold mb-2">Python Editor</h3>
+            <p className="text-gray-300 mb-4">
+              Write, execute, and debug Python scripts right in your browser.
+            </p>
+            <Link
+              to="/python"
+              className="mt-auto bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
+            >
+              Launch
+            </Link>
+          </motion.div>
+
+          {/* JavaScript */}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+          >
+            <FaJsSquare className="text-yellow-300 text-5xl mb-4" />
+            <h3 className="text-xl font-bold mb-2">JavaScript Editor</h3>
+            <p className="text-gray-300 mb-4">
+              Run JavaScript code in a powerful browser-based environment.
+            </p>
+            <Link
+              to="/js"
+              className="mt-auto bg-gradient-to-br from-green-300 to-yellow-400 hover:from-green-400 hover:to-yellow-500 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
+            >
+              Launch
+            </Link>
+          </motion.div>
+        </div>
       </div>
 
-      {/* Array Component Section */}
-      <div className="w-full bg-gray-900 flex justify-center items-center py-12">
-        <Array />
-      </div>
+      {/* Array Problemset Section */}
+      <Array />
     </>
   )
 }

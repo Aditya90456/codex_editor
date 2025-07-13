@@ -3,12 +3,15 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const PythonShell  =require('python-shell');
 const fs = require('fs');
+
+const axios = require('axios');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const { exec } = require('child_process');
-const { v4: uuid } = require('uuid');
+const { v4: uuid } = require('uuid'); 
 const { body, validationResult } = require('express-validator');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -37,43 +40,91 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
-// 🟢 Connect MongoDB
-app.post('/run', async (req, res) => {
+// 🟢 Connect MongoDB'';
+app.get('/api/me', authenticateToken, async (req, res) => {
+  try {   
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found ' });
+    res.json({ username: user.username, ObjectId: user._id });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+app.post('/run/python', async (req, res) => {
   const { code } = req.body;
+
   if (!code) return res.status(400).json({ message: 'Code is required' });
 
-  const id = uuid();
-  const fileName = `temp_${id}.cpp`;
-  const outputFile = `temp_${id}${process.platform === 'win32' ? '.exe' : '.out'}`;
-
-  // Write C++ code to temp file
-  fs.writeFile(fileName, code, (err) => {
-    if (err) {
-      console.error('❌ File write error:', err);
-      return res.status(500).json({ message: 'Error writing file' });
-    }
-
-    // Compile and execute with timeout (5 seconds)
-    const cmd = `g++ ${fileName} -o ${outputFile} && ./${outputFile}`;
-    exec(cmd, { timeout: 5000 }, (error, stdout, stderr) => {
-      // Always clean up temp files
-      fs.unlink(fileName, () => {});
-      fs.unlink(outputFile, () => {});
-
-      if (error) {
-        console.error('❌ Compilation/Execution error:', stderr || error.message);
-
-        // Check if it's a timeout
-        if (error.killed) {
-          return res.status(500).json({ output: '⏳ Execution timed out (possible infinite loop).' });
+  try {
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      language: 'python3',
+      version: '3.10.0', // optional, defaults to latest
+      files: [
+        {
+          name: 'main.py',
+          content: code
         }
-
-        return res.status(500).json({ output: stderr || error.message });
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
       }
-
-      res.json({ output: stdout || '✅ Program executed successfully. No output.' });
     });
-  });
+
+    const result = response.data;
+
+    res.json({
+      output: result.run.stdout || result.run.stderr || '✅ Program executed successfully. No output.'
+    });
+  } catch (error) {
+    console.error('❌ Cloud Python Error:', error.response?.data || error.message);
+    res.status(500).json({ output: 'Cloud Python error: ' + error.message });
+  }
+});
+
+app.get('/dashboard', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+  try {
+    const problems = await Problem.find({ userId });
+    const { total, solved, progress } = calculateProgress(problems);
+    res.json({ message: 'Dashboard data retrieved successfully', problems, total, solved, progress });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }   
+
+})
+
+app.post('/run', async (req, res) => {
+  const { code } = req.body;
+
+  if (!code) return res.status(400).json({ message: 'Code is required' });
+
+  try {
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      language: 'cpp',
+      version: '10.2.0', // You can also use '11.2.0' or latest
+      files: [
+        {
+          name: 'main.cpp',
+          content: code
+        }
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const result = response.data;
+
+    res.json({
+      output: result.run.stdout || result.run.stderr || '✅ Program executed successfully. No output.'
+    });
+  } catch (error) {
+    console.error('❌ Cloud C++ Error:', error.response?.data || error.message);
+    res.status(500).json({ output: 'Cloud C++ error: ' + error.message });
+  }
 });
 
 connectDB()

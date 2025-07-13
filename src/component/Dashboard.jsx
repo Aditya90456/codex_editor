@@ -5,24 +5,32 @@ import { motion } from 'framer-motion';
 function Dashboard() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState('Guest');
+  const [user, setUser] = useState({
+    username: 'Guest',
+    email: '',
+    joined: '',
+    streak: 0,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch user info
         const userRes = await axios.get('http://localhost:5000/user', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
         });
-        setUser(userRes.data.username || 'Guest');
+        setUser({
+          username: userRes.data.username || 'Guest',
+          email: userRes.data.email || 'Not Provided',
+          joined: userRes.data.joined || 'Unknown',
+          streak: userRes.data.streak || 0,
+        });
 
-        // Fetch dashboard progress
         const progressRes = await axios.get('http://localhost:5000/dashboard', {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('authToken')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+          },
         });
         setData(progressRes.data.problems || []);
       } catch (error) {
@@ -36,28 +44,46 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-4">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+      {/* Profile Card */}
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="w-full max-w-5xl bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 rounded-3xl p-8 mt-10 shadow-xl relative overflow-hidden"
+      >
+        <div className="flex flex-col sm:flex-row items-center sm:items-start">
+          <img
+            src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.username}`}
+            alt="User Avatar"
+            className="w-24 h-24 rounded-full border-4 border-white shadow-lg"
+          />
+          <div className="sm:ml-6 mt-4 sm:mt-0 text-center sm:text-left">
+            <h1 className="text-4xl font-bold tracking-tight mb-1">
+              Welcome, <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 to-red-500">{user.username}</span>
+            </h1>
+            <p className="text-lg text-gray-100">📧 {user.email}</p>
+            <p className="text-md text-gray-200 mt-1">📅 Joined: {user.joined}</p>
+            <p className="text-md text-green-300 mt-1">🔥 Streak: {user.streak} days</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Dashboard Content */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-6xl bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] border border-gray-200 border-opacity-10 mt-12"
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="w-full max-w-6xl mt-10 p-6"
       >
-        <h1 className="text-5xl font-extrabold text-white text-center mb-10 tracking-wide">
-          🚀 Welcome, <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">{user}</span>
-        </h1>
-
         {loading ? (
-          <p className="text-gray-300 text-center text-lg animate-pulse">Loading your dashboard...</p>
+          <p className="text-xl text-center animate-pulse">Loading your dashboard...</p>
         ) : data.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {data.map((item, index) => {
-              // 🔥 Fallbacks and progress calculation
               const solved = parseInt(item.solved) || 0;
-              const total = parseInt(item.total) || 1; // avoid division by 0
+              const total = parseInt(item.total) || 1;
               let progressPercent = Math.round((solved / total) * 100);
-
-              // If API gives percentage directly (fallback)
               if (item.percentage !== undefined) {
                 progressPercent = Math.min(parseInt(item.percentage), 100);
               }
@@ -65,14 +91,14 @@ function Dashboard() {
               return (
                 <motion.div
                   key={index}
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gray-800 bg-opacity-60 backdrop-blur-md p-6 rounded-2xl shadow-xl border border-gray-700 hover:shadow-2xl transition-all duration-300"
+                  whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(255,255,255,0.3)' }}
+                  className="bg-[#1f2937] bg-opacity-70 backdrop-blur-lg rounded-2xl p-5 border border-gray-600 shadow-lg"
                 >
-                  <h2 className="text-2xl font-semibold text-white mb-3">{item.title}</h2>
+                  <h2 className="text-2xl font-semibold mb-2">{item.title}</h2>
                   <p className="text-gray-300 mb-4">{item.description || 'No description available.'}</p>
-                  <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+                  <div className="w-full bg-gray-700 rounded-full h-3 mb-2">
                     <div
-                      className="bg-gradient-to-r from-green-400 to-blue-500 h-2 rounded-full"
+                      className="bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full"
                       style={{ width: `${progressPercent}%` }}
                     ></div>
                   </div>
@@ -82,9 +108,12 @@ function Dashboard() {
             })}
           </div>
         ) : (
-          <p className="text-gray-400 text-center italic">
-            🚧 No problems found. Start solving to see progress!
-          </p>
+          <div className="text-center mt-10">
+            <p className="text-xl text-gray-300 mb-4">🚧 No problems found. Start solving to see progress!</p>
+            <button className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 rounded-full text-white font-bold hover:scale-105 transition transform">
+              Start Solving
+            </button>
+          </div>
         )}
       </motion.div>
     </div>

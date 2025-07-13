@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import Editor from '@monaco-editor/react'
 
 function CodeEditor() {
-  const [html, setHtml] = useState('<h1>Hello World</h1>')
-  const [css, setCss] = useState('h1 { color: red; }')
-  const [js, setJs] = useState('console.log("Hello World");')
+  const [html, setHtml] = useState('<h1>Hello, Aditya!</h1>')
+  const [css, setCss] = useState('h1 { color: #00FFAB; text-align: center; }')
+  const [js, setJs] = useState('console.log("Welcome to CodeX")')
   const [output, setOutput] = useState('')
 
   const runCode = () => {
@@ -23,75 +23,71 @@ function CodeEditor() {
   }
 
   return (
-    <div className="w-full h-screen bg-gray-900 flex flex-col">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#141E30] to-[#243B55] text-white flex flex-col">
       {/* Header */}
-      <div className="w-full h-16 bg-gray-800 flex items-center justify-center relative top-13 py-6 px-6">
-        <h1 className="text-white text-2xl font-bold text-center">Web development editor</h1>
+      <header className="flex justify-between items-center px-6 py-4 bg-black/20 backdrop-blur-md mt-12 shadow-lg">
+        <h1 className="text-3xl font-bold text-transparent bg-gradient-to-r from-pink-500 to-yellow-400 bg-clip-text">
+          🚀 Web Development Editor
+        </h1>
         <button
           onClick={runCode}
-          className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+          className="px-5 py-2 bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white rounded-xl shadow-md transition"
         >
-          Run Code
+          Run ▶
         </button>
-      </div>
+      </header>
 
-      {/* Editor Section */}
-      <div className="flex flex-row w-full h-2/3">
-        <div className="w-1/3 h-full bg-gray-800 p-4">
-          <h2 className="text-white text-lg font-bold mb-2">HTML</h2>
+      {/* Editors */}
+      <div className="flex flex-col md:flex-row flex-1">
+        {/* HTML Editor */}
+        <div className="flex-1 p-3">
+          <h2 className="text-lg font-semibold mb-2">🔤 HTML</h2>
           <Editor
+            height="30vh"
             defaultLanguage="html"
             value={html}
             onChange={(value) => setHtml(value || '')}
             theme="vs-dark"
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              wordWrap: 'on',
-              lineNumbers: 'on',
-            }}
+            options={{ fontSize: 14, minimap: { enabled: false }, wordWrap: 'on' }}
           />
         </div>
-        <div className="w-1/3 bg-gray-800 p-4">
-          <h2 className="text-white text-lg font-bold mb-2">CSS</h2>
+
+        {/* CSS Editor */}
+        <div className="flex-1 p-3">
+          <h2 className="text-lg font-semibold mb-2">🎨 CSS</h2>
           <Editor
+            height="30vh"
             defaultLanguage="css"
             value={css}
-           theme="vs-dark"
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              wordWrap: 'on',
-              lineNumbers: 'on',
-            }}
+            onChange={(value) => setCss(value || '')}
+            theme="vs-dark"
+            options={{ fontSize: 14, minimap: { enabled: false }, wordWrap: 'on' }}
           />
         </div>
-        <div className="w-1/3 bg-gray-800 p-4">
-          <h2 className="text-white text-lg font-bold mb-2">JavaScript</h2>
+
+        {/* JS Editor */}
+        <div className="flex-1 p-3">
+          <h2 className="text-lg font-semibold mb-2">⚡ JavaScript</h2>
           <Editor
+            height="30vh"
             defaultLanguage="javascript"
             value={js}
             onChange={(value) => setJs(value || '')}
             theme="vs-dark"
-            options={{
-              fontSize: 14,
-              minimap: { enabled: false },
-              wordWrap: 'on',
-              lineNumbers: 'on',
-            }}
+            options={{ fontSize: 14, minimap: { enabled: false }, wordWrap: 'on' }}
           />
         </div>
       </div>
 
-      {/* Output Section */}
-      <div className="w-full h-1/3 bg-gray-900 p-4">
-        <h2 className="text-white text-lg font-bold mb-2">Output</h2>
+      {/* Output */}
+      <div className="p-4 bg-black/30 backdrop-blur-md">
+        <h2 className="text-lg font-semibold mb-2">📦 Output</h2>
         <iframe
           srcDoc={output}
           title="Output"
           sandbox="allow-scripts"
           frameBorder="0"
-          className="w-full h-full bg-white"
+          className="w-full h-[300px] rounded-lg shadow-lg bg-white"
         ></iframe>
       </div>
     </div>
