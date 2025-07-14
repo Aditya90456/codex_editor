@@ -126,6 +126,137 @@ app.post('/run', async (req, res) => {
     res.status(500).json({ output: 'Cloud C++ error: ' + error.message });
   }
 });
+app.post('/debug', async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: 'Code is required' });
+  try {
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      language: 'cpp',
+      version: '10.2.0', // You can also use '11.2.0' or latest
+      files: [
+        {
+          name: 'main.cpp', // You can change this to whatever you want 
+          content: code
+        }
+      ]
+    }, {
+      headers: {
+        'Content-Type': 'application/json'                  
+        }
+    });
+    const result = response.data;
+    res.json({  
+      output: result.run.stdout || result.run.stderr || '✅ Program executed successfully. No output.'
+    });
+  } catch (error) {
+    console.error('❌ Cloud C++ Debug Error:', error.response?.data || error.message
+    );
+    res.status(500).json({ output: 'Cloud C++ debug error: ' + error.message });
+  }
+});
+app.post('/analyze/python', async (req, res) => {
+  const { code } = req.body;
+  var complexity = 'O(1)'; // Placeholder for actual analysis logic
+  var timeComplexity = 'O(1)'; // Placeholder for actual analysis logic
+var spaceComplexity = 'O(1)'; // Placeholder for actual analysis logic 
+  const loopCount = (code.match(/for\s*\(|while\s*\(/g) || []).length;
+  const functionNames = [...code.matchAll(/(\w+)\s*\([^)]*\)\s*{/g)].map(match => match[1]);
+  const isRecursive = functionNames.some(fn => new RegExp(`\\b${fn}\\s*\\(`).test(code));
+  if (loopCount === 1) complexity = 'O(n)';
+  else if (loopCount >= 2) complexity = 'O(n^2)';
+  if (isRecursive) complexity = 'O(2^n) or O(n) [Recursion detected]';  
+  res.json({ complexity, timeComplexity, spaceComplexity });
+});
+
+
+app.post('/debug/python', async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: 'Code is required' }); 
+  // 🐍 Use PythonShell to run the cod
+  // e
+
+  try {
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      language: 'python',
+
+      version: '3.10.0', // You can also use '3.11.0' or latest
+      files: [
+        {
+          name: 'main.py', // You can change this to whatever you want
+          content: code
+        }
+      ]
+    }, {
+      headers: {  
+        'Content-Type': 'application/json'
+      }
+    
+    });
+
+    const result = response.data;
+    res.json({
+      output: result.run.stdout || result.run.stderr || '✅ Program executed successfully. No output' 
+    });
+  } catch (error) {
+    console.error('❌ Cloud Python Debug Error:', error.response?.data || error.message);
+    res.status(500).json({ output: 'Cloud Python debug error: ' + error .message });
+  }   
+}); 
+  app.post('/debug/js', async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: 'Code is required' });
+  try {
+    const response = await axios.post('https://emkc.org/api/v2/piston/execute', {
+      language: 'javascript',
+      version: '18.15.0', // Node 18 LTS
+      files: [{ name: 'debug.js', content: code }]
+    }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const result = response.data;
+    res.json({
+      output: result.run.stdout || result.run.stderr || '✅ Debug finished. No output.'
+    });
+  } catch (err) {
+    console.error('❌ Debug Error:', err.response?.data || err.message);
+    res.status(500).json({ output: '❌ Cloud Debug Error: ' + err.message });
+  }
+});
+app.post('/analyze/js', async (req, res) => {
+  const { code } = req.body;
+  var complexity = 'O(1)'; // Placeholder for actual analysis logic
+  var timeComplexity = 'O(1)'; // Placeholder for actual analysis logic
+  var spaceComplexity = 'O(1)'; // Placeholder for actual analysis logic
+  const loopCount = (code.match(/for\s*\(|while\s*\(/g) || []).length;
+  const functionNames = [...code.matchAll(/(\w+)\s*\([^)]*\)\s*{/g)].map(match => match[1]);
+  const isRecursive = functionNames.some(fn => new RegExp(`\\b${fn}\\s*\\(`).test(code));
+  if (loopCount === 1) complexity = 'O(n)';
+  else if (loopCount >= 2) complexity = 'O(n^2)';
+  if (isRecursive) complexity = 'O(2^n) or O(n) [Recursion detected]';
+  res.json({ complexity, timeComplexity, spaceComplexity });
+});
+app.post('/analyze', (req, res) => {
+  const { code } = req.body;
+
+  // 📊 Simple heuristic-based complexity analyzer
+  let complexity = 'O(1)';
+
+  // Count loops
+  const loopCount = (code.match(/for\s*\(|while\s*\(/g) || []).length;
+
+  // Detect recursion
+  const functionNames = [...code.matchAll(/(\w+)\s*\([^)]*\)\s*{/g)].map(match => match[1]);
+  const isRecursive = functionNames.some(fn => new RegExp(`\\b${fn}\\s*\\(`).test(code));
+  // Set complexity based on loops and recursion
+  if (loopCount === 0 && !isRecursive) complexity = 'O(1)';
+  else if (loopCount === 1) complexity = 'O(n)';  
+  else if (loopCount >= 2) complexity = 'O(n^2)';
+  if (isRecursive) complexity = 'O(2^n) or O(n) [Recursion detected]';
+ 
+
+  res.json({ complexity });
+});
 
 connectDB()
   .then(() => console.log('✅ MongoDB Connected'))
