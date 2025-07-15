@@ -58,7 +58,7 @@ function Navbar() {
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-6">
         <Link to="/" className={navLinkStyle('/')}>Home</Link>
-        <Link to="/web" className={navLinkStyle('/web')}>Web Dev Editor</Link>
+        <Link to="/editor" className={navLinkStyle('/web')}>Web Dev Editor</Link>
         <Link to="/cpp" className={navLinkStyle('/cpp')}>C++ Editor</Link>
         <Link to="/python" className={navLinkStyle('/python')}>Python Editor</Link>
         <Link to="/js" className={navLinkStyle('/js')}>JS Editor</Link>
@@ -96,7 +96,7 @@ function Navbar() {
       {mobileMenuOpen && (
         <div className="absolute top-16 left-0 w-full bg-gray-800/90 backdrop-blur-md shadow-md py-4 flex flex-col gap-4 px-6">
           <Link to="/" onClick={toggleMobileMenu} className={navLinkStyle('/')}>Home</Link>
-          <Link to="/web" onClick={toggleMobileMenu} className={navLinkStyle('/web')}>Web Dev Editor</Link>
+          <Link to="/editor" onClick={toggleMobileMenu} className={navLinkStyle('/editor')}>Web Dev Editor</Link>
           <Link to="/cpp" onClick={toggleMobileMenu} className={navLinkStyle('/cpp')}>C++ Editor</Link>
           <Link to="/python" onClick={toggleMobileMenu} className={navLinkStyle('/python')}>Python Editor</Link>
           <Link to="/js" onClick={toggleMobileMenu} className={navLinkStyle('/js')}>JS Editor</Link>

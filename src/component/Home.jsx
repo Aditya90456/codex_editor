@@ -23,7 +23,6 @@ function Home() {
         const res = await axios.get('http://localhost:5000/api/me', {
           headers: { Authorization: `Bearer ${token}` },
         })
-
         setUser(res.data.username || 'Guest')
       } catch (err) {
         console.error('User not logged in:', err.message)
@@ -32,177 +31,158 @@ function Home() {
         setLoading(false)
       }
     }
-
     fetchUser()
   }, [])
 
   if (loading) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-gray-900 text-white">
-        <h1 className="text-3xl font-bold">Loading...</h1>
+        <h1 className="text-3xl font-semibold animate-pulse">Loading...</h1>
       </div>
     )
   }
 
   return (
-    <>
-      {/* 🌟 Hero Section */}
-      <div className="relative w-full min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-white flex flex-col justify-center items-center text-center px-4 overflow-hidden">
-        {/* 🎨 Floating Blobs */}
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-pink-500 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
-        <div className="absolute top-20 right-20 w-72 h-72 bg-yellow-400 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
-
+    <div className="w-full min-h-screen bg-white text-gray-800">
+      {/* 🏠 Hero Section */}
+      <section className="flex flex-col justify-center items-center text-center py-20 px-4">
         <motion.h1
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1 }}
-          className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent mb-8"
+          transition={{ duration: 0.6 }}
+          className="text-4xl md:text-6xl font-extrabold mb-4"
         >
-          🚀 Welcome {user ? `${user}` : 'to CodeX'}
+          Welcome {user ? user : 'to CodeX'}
         </motion.h1>
-
-        {user && (
-          <p className="text-lg md:text-xl text-gray-200 mb-8">
-            You're <span className="text-green-400 font-bold">{user.progress}%</span> done with your DSA journey.
-          </p>
-        )}
-
-        {/* 🎯 Editor Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 w-full max-w-6xl">
-          {/* 🌐 Web Dev */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="text-lg md:text-xl text-gray-600 max-w-2xl mb-6"
+        >
+          Build. Compile. Debug. Track your DSA journey in one place.
+        </motion.p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="flex space-x-4"
+        >
+          <Link
+            to="/dashboard"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
           >
-            <FaHtml5 className="text-orange-400 text-5xl mb-4" />
-            <h3 className="text-xl font-bold mb-2">Web Dev Editor</h3>
-            <p className="text-gray-300 mb-4">
-              Build and test HTML, CSS, and JS projects directly in your browser.
-            </p>
-            <Link
-              to="/editor"
-              className="mt-auto bg-gradient-to-br from-pink-500 to-yellow-500 hover:from-pink-600 hover:to-yellow-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
-            >
-              Launch
-            </Link>
-          </motion.div>
-
-          {/* 💻 C++ */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
+            Get Started
+          </Link>
+          <Link
+            to="/editor"
+            className="px-6 py-3 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300 transition"
           >
-            <CgCPlusPlus className="text-blue-400 text-5xl mb-4" />
-            <h3 className="text-xl font-bold mb-2">C++ Editor</h3>
-            <p className="text-gray-300 mb-4">
-              Compile and run C++ code with ease and lightning speed.
-            </p>
-            <Link
-              to="/cpp"
-              className="mt-auto bg-gradient-to-br from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
-            >
-              Launch
-            </Link>
-          </motion.div>
+            Try Editor
+          </Link>
+        </motion.div>
+      </section>
 
-          {/* 🐍 Python */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
-          >
-            <FaPython className="text-yellow-400 text-5xl mb-4" />
-            <h3 className="text-xl font-bold mb-2">Python Editor</h3>
-            <p className="text-gray-300 mb-4">
-              Write, execute, and debug Python scripts right in your browser.
-            </p>
-            <Link
-              to="/python"
-              className="mt-auto bg-gradient-to-br from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
-            >
-              Launch
-            </Link>
-          </motion.div>
-
-          {/* ⚡ JavaScript */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="backdrop-blur-xl bg-white/10 border border-white/20 rounded-2xl p-6 flex flex-col items-center text-center shadow-xl"
-          >
-            <FaJsSquare className="text-yellow-300 text-5xl mb-4" />
-            <h3 className="text-xl font-bold mb-2">JavaScript Editor</h3>
-            <p className="text-gray-300 mb-4">
-              Run JavaScript code in a powerful browser-based environment.
-            </p>
-            <Link
-              to="/js"
-              className="mt-auto bg-gradient-to-br from-green-300 to-yellow-400 hover:from-green-400 hover:to-yellow-500 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition duration-300"
-            >
-              Launch
-            </Link>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* 🚀 Roadmap Section */}
-      <div className="w-full bg-gradient-to-br from-[#1f1f2e] via-[#28293d] to-[#1a1a2f] py-12">
+      {/* ✨ Features */}
+      <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-10 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-            🚀 Roadmap to Web Development
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
+            Explore Our Editors
           </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Frontend */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-[#27293d] rounded-2xl p-6 text-white shadow-lg border border-gray-700"
-            >
-              <h3 className="text-2xl font-bold text-cyan-400 mb-3">🎨 Frontend</h3>
-              <ul className="list-disc list-inside text-gray-300 space-y-2">
-                <li>HTML & CSS Basics</li>
-                <li>JavaScript ES6+</li>
-                <li>React.js & Hooks</li>
-                <li>TailwindCSS / SCSS</li>
-                <li>Responsive Design</li>
-              </ul>
-            </motion.div>
-
-            {/* Backend */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-[#27293d] rounded-2xl p-6 text-white shadow-lg border border-gray-700"
-            >
-              <h3 className="text-2xl font-bold text-green-400 mb-3">🛠️ Backend</h3>
-              <ul className="list-disc list-inside text-gray-300 space-y-2">
-                <li>Node.js Basics</li>
-                <li>Express.js API Development</li>
-                <li>MongoDB & Mongoose</li>
-                <li>Authentication (JWT)</li>
-                <li>REST APIs & Middleware</li>
-              </ul>
-            </motion.div>
-
-            {/* Full Stack */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="bg-[#27293d] rounded-2xl p-6 text-white shadow-lg border border-gray-700"
-            >
-              <h3 className="text-2xl font-bold text-purple-400 mb-3">🌐 Full Stack</h3>
-              <ul className="list-disc list-inside text-gray-300 space-y-2">
-                <li>Frontend + Backend Integration</li>
-                <li>Deployments (Vercel, Render)</li>
-                <li>Version Control (Git & GitHub)</li>
-                <li>WebSocket / Real-time Apps</li>
-                <li>Performance Optimization</li>
-              </ul>
-            </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <FeatureCard
+              Icon={FaHtml5}
+              color="text-orange-500"
+              title="Web Dev"
+              description="HTML, CSS, JS playground to build and test UI instantly."
+              link="/editor"
+            />
+            <FeatureCard
+              Icon={CgCPlusPlus}
+              color="text-blue-500"
+              title="C++"
+              description="Write, compile, and debug C++ code effortlessly."
+              link="/cpp"
+            />
+            <FeatureCard
+              Icon={FaPython}
+              color="text-yellow-500"
+              title="Python"
+              description="Run Python scripts and see results instantly."
+              link="/python"
+            />
+            <FeatureCard
+              Icon={FaJsSquare}
+              color="text-yellow-400"
+              title="JavaScript"
+              description="Execute JavaScript code in a browser-based environment."
+              link="/js"
+            />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* 📚 Array Problemset */}
+      {/* 📚 Roadmap */}
+      <section className="py-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-10">
+            🛠 Your Roadmap
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <RoadmapCard
+              title="Frontend"
+              steps={['HTML/CSS', 'JavaScript', 'React.js', 'TailwindCSS']}
+            />
+            <RoadmapCard
+              title="Backend"
+              steps={['Node.js', 'Express.js', 'MongoDB', 'JWT Auth']}
+            />
+            <RoadmapCard
+              title="Full Stack"
+              steps={['Integrate Frontend & Backend', 'Deploy', 'Optimize']}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 📚 Array Sheet */}
       <Array />
-    </>
+    </div>
+  )
+}
+
+function FeatureCard({ Icon, color, title, description, link }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition"
+    >
+      <Icon className={`${color} text-4xl mb-4`} />
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-gray-600 mb-4">{description}</p>
+      <Link
+        to={link}
+        className="inline-block mt-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+      >
+        Launch
+      </Link>
+    </motion.div>
+  )
+}
+
+function RoadmapCard({ title, steps }) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition"
+    >
+      <h3 className="text-lg font-semibold text-blue-600 mb-3">{title}</h3>
+      <ul className="list-disc list-inside text-gray-700 space-y-1">
+        {steps.map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
+      </ul>
+    </motion.div>
   )
 }
 
