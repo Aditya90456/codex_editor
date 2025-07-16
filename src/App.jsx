@@ -19,6 +19,8 @@ import Mentorship from './component/Mentorship'
 import AI from './component/AI'
 import Python from './component/Python'
 import JavaScriptEditor from './component/Js'
+import Dsa from './component/Dsa' 
+import Roadmap from './component/Roadmap' 
 function App() {
   const router = createBrowserRouter([
     {
@@ -332,7 +334,53 @@ function App() {
           </motion.div>
       </>
     )
-  }
+  },
+  {
+    path:'/dsa',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-3xl font-bold text-center mt-10">DSA Topic Guide</h1>
+            {/* Add your DSA content here */}
+            <Dsa/>
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path: '/roadmap',
+    element: (
+      <>
+      <Navbar />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          > 
+          <Roadmap/>
+          </motion.div>
+          </motion.div>
+          </>
+    )
+  } 
   ])
 
   return <RouterProvider router={router} />

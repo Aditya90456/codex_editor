@@ -223,6 +223,21 @@ app.post('/debug/python', async (req, res) => {
     res.status(500).json({ output: '❌ Cloud Debug Error: ' + err.message });
   }
 });
+app.post('/api/resume', authenticateToken, async (req, res) => {
+  const userId = req.user.userId; 
+  const resumeData = req.body;
+  if (!resumeData) return res.status(400).json({ message: 'Resume data is required' });
+  try {
+    const updatedResume = await User.findByIdAndUpdate(userId,
+      { $set: { resume: resumeData } },
+      { new: true, upsert: true }
+    ).select('resume');
+    res.json({ message: 'Resume saved successfully', resume: updatedResume.resume });
+  } catch (error) {
+    console.error('❌ Resume Save Error:', error);
+    res.status(500).json({ message: 'Server error while saving resume', error: error.message });
+  }
+});
 app.post('/analyze/js', async (req, res) => {
   const { code } = req.body;
   var complexity = 'O(1)'; // Placeholder for actual analysis logic

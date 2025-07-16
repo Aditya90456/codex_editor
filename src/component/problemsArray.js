@@ -1,0 +1,65 @@
+// problemsArray.js
+export const problems = [
+  // 📘 Arrays – Easy (3 real)
+  { id: 1, title: 'Duplicate in Array', tags: ['Easy','Arrays'], link: 'https://leetcode.com/problems/find-the-duplicate-number/', status: 'unsolved' },
+  { id: 2, title: 'Find Repeating and Missing', tags: ['Easy','Arrays'], link: 'https://practice.geeksforgeeks.org/problems/find-missing-and-repeating2512/1', status: 'unsolved' },
+  { id: 3, title: 'Search in sorted 2D Matrix', tags: ['Easy','Arrays'], link: 'https://leetcode.com/problems/search-a-2d-matrix/', status: 'unsolved' },
+
+  // Fill up to 50 easy with placeholders
+  ...Array.from({ length: 47 }, (_, i) => ({
+    id: i + 4,
+    title: `Easy Problem ${i + 4}`,
+    tags: ['Easy', i % 2 === 0 ? 'Arrays' : 'Strings'],
+    link: '#',
+    status: 'unsolved',
+  })),
+
+  // ⚡ Arrays – Medium (7 real)
+  { id: 51, title: 'Set Matrix Zeroes', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/set-matrix-zeroes/', status: 'unsolved' },
+  { id: 52, title: 'Print Spiral Matrix', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/spiral-matrix/', status: 'unsolved' },
+  { id: 53, title: 'Next Permutation', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/next-permutation/', status: 'unsolved' },
+  { id: 54, title: 'Sort Array of 0, 1 and 2', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/sort-colors/', status: 'unsolved' },
+  { id: 55, title: 'Kadane’s Algorithm', tags: ['Medium','Arrays','DP'], link: 'https://leetcode.com/problems/maximum-subarray/', status: 'unsolved' },
+  { id: 56, title: 'Stock Buy and Sell', tags: ['Medium','Greedy'], link: 'https://leetcode.com/problems/best-time-to-buy-and-sell-stock/', status: 'unsolved' },
+  { id: 57, title: 'Longest Consecutive Sequence', tags: ['Medium','Hashing'], link: 'https://leetcode.com/problems/longest-consecutive-sequence/', status: 'unsolved' },
+
+  // Fill up to 30 medium with placeholders
+  ...Array.from({ length: 23 }, (_, i) => ({
+    id: i + 58,
+    title: `Medium Problem ${i + 1}`,
+    tags: ['Medium', i % 2 ? 'DP' : 'Greedy'],
+    link: '#',
+    status: 'unsolved',
+  })),
+
+  // 🔥 Arrays – Hard (14 real)
+  ...[
+    { title: 'Rotate Matrix', tags: ['Hard','Arrays'], link: 'https://leetcode.com/problems/rotate-image/' },
+    { title: 'Pascal’s Triangle', tags: ['Hard','Math'], link: 'https://leetcode.com/problems/pascals-triangle-ii/' },
+    { title: 'Merge Intervals', tags: ['Hard','Greedy'], link: 'https://leetcode.com/problems/merge-intervals/' },
+    { title: 'Count Inversions', tags: ['Hard','Divide & Conquer'], link: 'https://www.geeksforgeeks.org/counting-inversions/' },
+    { title: 'Merge Sorted Arrays', tags: ['Hard','Arrays'], link: 'https://leetcode.com/problems/merge-sorted-array/' },
+    { title: 'Majority Element (>n/2)', tags: ['Hard','Hashing'], link: 'https://leetcode.com/problems/majority-element/' },
+    { title: 'Majority Element (>n/3)', tags: ['Hard','Hashing'], link: 'https://leetcode.com/problems/majority-element-ii/' },
+    { title: 'Grid Unique Paths', tags: ['Hard','DP'], link: 'https://leetcode.com/problems/unique-paths/' },
+    { title: 'Reverse Pairs', tags: ['Hard','Divide & Conquer'], link: 'https://leetcode.com/problems/reverse-pairs/' },
+    { title: 'Longest Subarray with 0 Sum', tags: ['Hard','Hashing'], link: 'https://www.geeksforgeeks.org/longest-subarray-with-sum-0/' },
+    { title: 'Longest Substring without repeat', tags: ['Hard','Strings'], link: 'https://leetcode.com/problems/longest-substring-without-repeating-characters/' },
+    { title: 'Max Subarray Product', tags: ['Hard','DP'], link: 'https://leetcode.com/problems/maximum-product-subarray/' },
+    { title: '3 Sum', tags: ['Hard','Two Pointers'], link: 'https://leetcode.com/problems/3sum/' },
+    { title: 'Trapping Rainwater', tags: ['Hard','Stacks'], link: 'https://leetcode.com/problems/trapping-rain-water/' },
+  ].map((p, i) => ({
+    id: 81 + i,
+    ...p,
+    status: 'unsolved',
+  })),
+
+  // 🧩 Fill up to 250 total with mixed placeholders
+  ...Array.from({ length: 250 - (50 + 30 + 14) }, (_, i) => ({
+    id: i + 101,
+    title: `Mixed Problem ${i + 1}`,
+    tags: ['Mixed', i % 3 === 0 ? 'Graphs' : i % 3 === 1 ? 'DP' : 'Greedy'],
+    link: '#',
+    status: 'unsolved',
+  })),
+]
