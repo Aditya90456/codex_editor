@@ -60,7 +60,7 @@ function Roadmap() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f2027] mt-8 via-[#203a43] to-[#2c5364] text-white p-8">
       <header className="text-center mb-10">
         <h1 className="text-5xl font-extrabold">📈 Roadmap Development</h1>
         <p className="text-gray-300 mt-2">Track your coding journey step by step</p>

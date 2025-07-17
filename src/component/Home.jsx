@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { FaHtml5, FaPython, FaJsSquare, FaFileAlt, FaMap } from 'react-icons/fa'
+import { FaHtml5, FaPython, FaJsSquare, FaMap } from 'react-icons/fa'
 import { CgCPlusPlus } from 'react-icons/cg'
 import Particles from 'react-tsparticles'
 import { loadFull } from 'tsparticles'
@@ -84,25 +84,7 @@ function CodexLanding() {
       </section>
 
       {/* 📄 Resume Builder Section */}
-      <section className="relative z-10 py-20 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 text-center">
-        <motion.h2
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          className="text-4xl md:text-5xl font-extrabold text-white mb-4"
-        >
-          📄 Build Your Resume
-        </motion.h2>
-        <p className="text-lg text-gray-100 mb-6 max-w-xl mx-auto">
-          Create a professional resume in minutes and download it as PDF.
-        </p>
-        <Link
-          to="/resume"
-          className="inline-block px-8 py-4 bg-white text-purple-700 font-semibold rounded-full shadow hover:bg-gray-100 transition"
-        >
-          🚀 Launch Resume Builder
-        </Link>
-      </section>
+      
 
       {/* 🛠 Development Roadmaps Section */}
       <section className="relative z-10 py-20">
@@ -185,3 +167,4 @@ function EditorCard({ Icon, color, title, description, link }) {
 }
 
 export default CodexLanding
+                                                                                                
