@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FaPlay, FaTrash, FaSave, FaBug, FaChartLine } from 'react-icons/fa'
+import { FaPlay, FaTrash, FaSave, FaBug, FaChartLine, FaGithub } from 'react-icons/fa'
 
 function Python() {
   const [code, setCode] = useState(`# Write your Python code here\nprint("Hello, CodeX!")`)
+  const [filename, setFilename] = useState('snippet.py')
   const [output, setOutput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [githubUrl, setGithubUrl] = useState('')
 
   const runCode = async () => {
     setLoading(true)
@@ -61,13 +64,27 @@ function Python() {
   const clearCode = () => {
     setCode('')
     setOutput('')
+    setGithubUrl('')
+  }
+const saveCode = () => {
+  const savedSnippets = JSON.parse(localStorage.getItem('codex_snippets') || '[]')
+
+  const newSnippet = {
+    id: Date.now(),         // Unique ID
+    filename: filename || 'snippet.py',
+    code,
+    description: 'User saved code snippet',
+    lang: 'python',
+    savedAt: new Date().toLocaleString()
   }
 
-  const saveCode = () => {
-    localStorage.setItem('pythonCode', code)
-    
-    alert('💾 Code saved successfully!')
-  }
+  savedSnippets.push(newSnippet)
+  localStorage.setItem('codex_snippets', JSON.stringify(savedSnippets))
+
+  console.log('✅ Saved to Local Storage:', newSnippet)
+  setOutput(`✅ Code saved locally as "${newSnippet.filename}"`)
+}
+
 
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white flex flex-col px-4 py-6">
@@ -109,9 +126,10 @@ function Python() {
           </button>
           <button
             onClick={saveCode}
-            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-lg shadow-md transition duration-300"
+            disabled={saving}
+            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-lg shadow-md transition duration-300 disabled:opacity-50"
           >
-            <FaSave /> Save
+            <FaSave /> {saving ? 'Saving...' : 'Save'}
           </button>
           <button
             onClick={clearCode}
@@ -121,6 +139,15 @@ function Python() {
           </button>
         </div>
       </motion.div>
+
+      {/* Filename Input */}
+      <input
+        type="text"
+        placeholder="Enter filename (e.g., hello.py)"
+        className="mt-3 mb-3 w-full p-2 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        value={filename}
+        onChange={(e) => setFilename(e.target.value)}
+      />
 
       {/* Code Editor */}
       <motion.textarea
@@ -142,8 +169,19 @@ function Python() {
       >
         <h2 className="text-xl font-semibold mb-2">📝 Output:</h2>
         <pre className="whitespace-pre-wrap text-green-300">{output || 'Output will appear here...'}</pre>
+        {githubUrl && (
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-3 text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            <FaGithub /> View on GitHub
+          </a>
+        )}
       </motion.div>
     </div>
   )
 }
+
 export default Python

@@ -19,8 +19,17 @@ export default function CppEditor() {
 
   // 💾 Save code to localStorage
   const saveCode = () => {
-    localStorage.setItem('cppCode', code);
-    setOutput('✅ Code saved locally!');
+    const savedSnippets = JSON.parse(localStorage.getItem('codex_snippets') || '[]');
+    const newSnippet = {    
+      code,
+      lang: 'cpp',
+      filename: `snippet_${Date.now()}.cpp`,
+      description: 'C++ Code Snippet',
+    };
+    savedSnippets.push(newSnippet);
+    localStorage.setItem('codex_snippets', JSON.stringify(savedSnippets));
+    setOutput(`✅ Code saved locally as "${newSnippet.filename}"`);           
+    console.log('✅ Saved to Local Storage:', newSnippet);
   };
 
   // ▶ Run Code

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import { motion } from 'framer-motion';
 
 function Dashboard() {
@@ -43,6 +45,25 @@ function Dashboard() {
     fetchData();
   }, []);
 
+  // 📥 Download All Snippets
+  const downloadAllSnippets = async () => {
+    const savedSnippets = JSON.parse(localStorage.getItem('codex_snippets') || '[]');
+
+    if (savedSnippets.length === 0) {
+      alert('No saved snippets to download!');
+      return;
+    }
+
+    const zip = new JSZip();
+    savedSnippets.forEach((snippet, idx) => {
+      const ext = snippet.lang === 'python' ? '.py' : snippet.lang === 'javascript' ? '.js' : '.txt';
+      zip.file(`${snippet.filename || `snippet${idx + 1}`}${ext}`, snippet.code);
+    });
+
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, 'CodeX_Snippets.zip');
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
       {/* Profile Card */}
@@ -66,6 +87,16 @@ function Dashboard() {
             <p className="text-md text-gray-200 mt-1">📅 Joined: {user.joined}</p>
             <p className="text-md text-green-300 mt-1">🔥 Streak: {user.streak} days</p>
           </div>
+        </div>
+
+        {/* 📥 Download Button */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={downloadAllSnippets}
+            className="px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 rounded-full text-white font-bold hover:scale-105 transition transform shadow-lg"
+          >
+            ⬇️ Download My Snippets
+          </button>
         </div>
       </motion.div>
 

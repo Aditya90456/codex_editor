@@ -21,7 +21,7 @@ const User = require('./models/User');
 const Problem = require('./models/problem');
 const authenticateToken = require('./middleware/auth');
 const puppeteer = require('puppeteer')
-
+const Codes = require('./models/Codes'); // Import Codes model
 
 dotenv.config();
 
@@ -204,6 +204,64 @@ app.post('/debug/python', async (req, res) => {
     res.status(500).json({ output: 'Cloud Python debug error: ' + error .message });
   }   
 }); 
+const fetch = require('node-fetch');
+app.post('/code', authenticateToken, async (req, res) => {
+  console.log('🔵 Save Code Called');
+  const { code, description, lang, filename } = req.body;
+
+  if (!code || !description || !lang || !filename) {
+    console.log('🔴 Missing fields');
+    return res.status(400).json({ message: 'Code, description, lang, and filename are required' });
+  }
+
+  const githubToken = process.env.GITHUB_TOKEN;
+  const repoOwner = 'your-github-username';
+  const repoName = 'your-repo-name';
+  const filePath = `snippets/${lang}/${req.user.userId}/${filename}`; // 🗂️ Save in user folder
+
+  try {
+    // Check if file exists
+    let sha = null;
+    const getFileRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      headers: { Authorization: `token ${githubToken}` }
+    });
+
+    if (getFileRes.ok) {
+      const fileData = await getFileRes.json();
+      sha = fileData.sha;
+    }
+
+    // Create or update file
+    const saveRes = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${filePath}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${githubToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: `💾 Save code: ${description}`,
+        content: Buffer.from(code).toString('base64'),
+        sha
+      })
+    });
+
+    if (!saveRes.ok) {
+      const error = await saveRes.json();
+      throw new Error(`GitHub API Error: ${error.message}`);
+    }
+
+    const result = await saveRes.json();
+    console.log('✅ Code saved to GitHub:', result.content.path);
+
+    res.status(201).json({
+      message: 'Code saved to GitHub',
+      github: result.content
+    });
+  } catch (err) {
+    console.error('❌ GitHub Save Error:', err.message);
+    res.status(500).json({ message: 'Failed to save code to GitHub', error: err.message });
+  }
+});
   app.post('/debug/js', async (req, res) => {
   const { code } = req.body;
   if (!code) return res.status(400).json({ message: 'Code is required' });
