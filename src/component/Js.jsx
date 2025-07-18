@@ -53,8 +53,17 @@ function JavaScript() {
 
   // 💾 Save Code
   const saveCode = () => {
-    localStorage.setItem('codex-js', code)
-    alert('Code saved successfully! 🎉')
+    const savedSnippets = JSON.parse(localStorage.getItem('codex_snippets') || '[]');
+    const newSnippet = {
+      code,
+      lang: 'javascript',
+      filename: `snippet_${Date.now()}.js`,
+      description: 'JavaScript Code Snippet',
+    };
+    savedSnippets.push(newSnippet);
+    localStorage.setItem('codex_snippets', JSON.stringify(savedSnippets));
+    setOutput(`✅ Code saved locally as "${newSnippet.filename}"`);
+    console.log('✅ Saved to Local Storage:', newSnippet);
   }
 
   // 🗑 Clear Code
