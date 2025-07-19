@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FaHtml5, FaPython, FaJsSquare, FaMap } from 'react-icons/fa'
-import { CgCPlusPlus } from 'react-icons/cg'
-import Particles from 'react-tsparticles'
-import { loadFull } from 'tsparticles'
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { FaHtml5, FaPython, FaJsSquare, FaMap } from "react-icons/fa";
+import { CgCPlusPlus } from "react-icons/cg";
+import Particles from "react-tsparticles";
+import { loadFull } from "tsparticles";
 
 function CodexLanding() {
   const particlesInit = async (main) => {
-    await loadFull(main)
-  }
+    await loadFull(main);
+  };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
@@ -22,7 +22,7 @@ function CodexLanding() {
             number: { value: 50 },
             size: { value: 3 },
             move: { enable: true, speed: 1.5 },
-            links: { enable: true, color: '#ffffff', distance: 150 },
+            links: { enable: true, color: "#ffffff", distance: 150 },
             opacity: { value: 0.4 },
           },
         }}
@@ -37,7 +37,7 @@ function CodexLanding() {
           transition={{ duration: 1 }}
           className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-pink-400 to-purple-600 bg-clip-text text-transparent"
         >
-          👨‍💻 Welcome to CodeX Playground
+          👨‍💻 Welcome, Aditya!
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ function CodexLanding() {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="text-lg md:text-xl text-gray-300 max-w-2xl"
         >
-          Run C++, Python, JavaScript, build resumes & level up your career.
+          Build, run, and level up with CodeX Playground.
         </motion.p>
       </div>
 
@@ -83,8 +83,8 @@ function CodexLanding() {
         </div>
       </section>
 
-      {/* 📄 Resume Builder Section */}
-      
+      {/* 🌟 Tribute Section */}
+      <StriverTributeSection username="Aditya Bakshi" />
 
       {/* 🛠 Development Roadmaps Section */}
       <section className="relative z-10 py-20">
@@ -100,7 +100,6 @@ function CodexLanding() {
           <p className="text-gray-300 mb-10 max-w-2xl mx-auto">
             Follow structured paths to master Frontend, Backend, Full-Stack, and DSA like a pro.
           </p>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {roadmaps.map((roadmap, index) => (
               <motion.div
@@ -133,15 +132,15 @@ function CodexLanding() {
         © 2025 CodeX by Aditya | All editors & tools powered by CodeX Engine
       </footer>
     </div>
-  )
+  );
 }
 
 const roadmaps = [
-  { title: 'Frontend Roadmap', description: 'HTML, CSS, JS, React, Tailwind' },
-  { title: 'Backend Roadmap', description: 'Node.js, Express, MongoDB, APIs' },
-  { title: 'Full-Stack Roadmap', description: 'Combine frontend & backend mastery' },
-  { title: 'DSA Roadmap', description: 'Ace Data Structures & Algorithms step by step' },
-]
+  { title: "Frontend Roadmap", description: "HTML, CSS, JS, React, Tailwind" },
+  { title: "Backend Roadmap", description: "Node.js, Express, MongoDB, APIs" },
+  { title: "Full-Stack Roadmap", description: "Combine frontend & backend mastery" },
+  { title: "DSA Roadmap", description: "Ace Data Structures & Algorithms step by step" },
+];
 
 function EditorCard({ Icon, color, title, description, link }) {
   return (
@@ -163,8 +162,39 @@ function EditorCard({ Icon, color, title, description, link }) {
         Open {title}
       </Link>
     </motion.div>
-  )
+  );
+}
+function StriverTributeSection({ username }) {
+  return (
+    <section className="relative z-10 py-16 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="max-w-4xl mx-auto bg-gradient-to-br from-purple-800/30 via-pink-700/30 to-indigo-900/30 backdrop-blur-md rounded-3xl p-8 text-center border border-purple-500/30 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
+      >
+        <h2 className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent mb-4">
+          🌟 Tribute to Striver
+        </h2>
+        <p className="text-gray-200 text-lg italic mb-6">
+          “Consistency is the key to crack coding interviews.”
+        </p>
+        <div className="text-sm text-gray-400 mb-6">
+          — {username}
+        </div>
+
+        {/* 🚀 Go to DSA Sheet Button */}
+        <a
+          href="https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems/"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-block px-6 py-3 bg-gradient-to-r from-green-400 to-blue-500 text-white font-semibold rounded-full shadow-lg hover:from-green-500 hover:to-blue-600 transition duration-300"
+        >
+          📘 Go to DSA Sheet
+        </a>
+      </motion.div>
+    </section>
+  );
 }
 
-export default CodexLanding
-                                                                                                
+export default CodexLanding;
