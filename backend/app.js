@@ -399,7 +399,6 @@ app.get('/user', authenticateToken, async (req, res) => {
 /**
  * 🧠 Gemini AI Chat API
  */
-
 // 🔥 Retry Gemini API call with exponential backoff
 async function callGeminiWithRetry(prompt, retries = 3, delay = 2000) {
   for (let attempt = 1; attempt <= retries; attempt++) {
