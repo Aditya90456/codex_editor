@@ -203,8 +203,9 @@ app.post('/debug/python', async (req, res) => {
     console.error('❌ Cloud Python Debug Error:', error.response?.data || error.message);
     res.status(500).json({ output: 'Cloud Python debug error: ' + error .message });
   }   
-}); 
-const fetch = require('node-fetch');
+});  
+     
+    const fetch = require('node-fetch');
 app.post('/code', authenticateToken, async (req, res) => {
   console.log('🔵 Save Code Called');
   const { code, description, lang, filename } = req.body;
@@ -399,35 +400,52 @@ app.get('/user', authenticateToken, async (req, res) => {
  * 🧠 Gemini AI Chat API
  */
 
+// 🔥 Retry Gemini API call with exponential backoff
 async function callGeminiWithRetry(prompt, retries = 3, delay = 2000) {
-  for (let i = 0; i < retries; i++) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(prompt);
       return result.response.text();
     } catch (err) {
-      if (err.message.includes('503') && i < retries - 1) {
-        console.warn(`🌐 Gemini overloaded. Retrying in ${delay}ms...`);
-        await new Promise(r => setTimeout(r, delay));
+      const isRetryable = err.message.includes('503') || err.code === 'ECONNRESET';
+
+      if (isRetryable && attempt < retries) {
+        console.warn(
+          `🌐 Gemini API overload (Attempt ${attempt}/${retries}). Retrying in ${delay}ms...`
+        );
+        await new Promise((r) => setTimeout(r, delay));
         delay *= 2; // exponential backoff
       } else {
-        throw err;
+        console.error(`❌ Gemini API call failed on attempt ${attempt}:`, err);
+        throw err; // rethrow after retries
       }
     }
   }
 }
+
+// 🛡️ API route: /ai
 app.post('/ai', authenticateToken, async (req, res) => {
   const { prompt } = req.body;
-  if (!prompt) return res.status(400).json({ message: 'Prompt is required' });
+
+  if (!prompt || typeof prompt !== 'string') {
+    return res.status(400).json({ message: '❗ Invalid or missing prompt.' });
+  }
 
   try {
-    const response = await callGeminiWithRetry(prompt);
-    res.json({ reply: response });
+    console.log(`📝 Prompt received: "${prompt}" from user ${req.user?.id}`);
+    const reply = await callGeminiWithRetry(prompt);
+
+    res.status(200).json({ reply });
   } catch (error) {
     console.error('❌ Gemini API Error:', error);
-    res.status(500).json({ message: 'Error calling Gemini API', error: error.message });
+    res.status(500).json({
+      message: 'Error calling Gemini API',
+      error: error.message || 'Unknown error',
+    });
   }
 });
+
 /**
  * 📦 Problems API
  */
