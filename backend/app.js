@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
@@ -375,7 +375,11 @@ app.post('/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: user._id, username }, JWT_SECRET, { expiresIn: '9yr' });
+    const token = jwt.sign({  
+
+      userId: user._id,
+      username: user.username
+    }, JWT_SECRET, { expiresIn: '9yr' });
 
     res.status(200).json({ success: true, token, username: user.username });
   } catch (error) {

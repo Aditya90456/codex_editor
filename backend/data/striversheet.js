@@ -1,4 +1,4 @@
-// backend/data/striversheet.js
+﻿// backend/data/striversheet.js
 // This file contains a list of coding problems with their details for the Striver's Sheet
 
 const striverSheet = [

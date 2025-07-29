@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import io from 'socket.io-client';
-
-const socket = io('http://localhost:5000');
-
+import axios from 'axios'; 
 function AIChat() {
   const [prompt, setPrompt] = useState('');
   const [messages, setMessages] = useState([]);

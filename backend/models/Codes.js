@@ -1,40 +1,27 @@
-const mongoose = require('mongoose');
+﻿const mongoose = require('mongoose');
 
-const CodesSchema = new mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
-    trim: true
-  },
+const codeSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  lang: {
+  code: {
     type: String,
-    required: true,
-    enum: ['python', 'javascript', 'java', 'c++', 'c#', 'ruby', 'go', 'php'],
-    trim: true
+    required: true
   },
   description: {
     type: String,
-    required: true,
-    trim: true
+    default: ''
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  lang: {
+    type: String,
+    required: true
   },
-  updatedAt: {
-    type: Date,
-    default: Date.now
+  filename: {
+    type: String,
+    required: true
   }
-});
+}, { timestamps: true });
 
-// ✅ Unique index on userId + code
-CodesSchema.index({ userId: 1, code: 1 }, { unique: true });
-
-const Codes = mongoose.model('Codes', CodesSchema);
-
-module.exports = Codes;
+module.exports = mongoose.model('Code', codeSchema);

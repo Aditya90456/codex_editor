@@ -1,20 +1,16 @@
 // problemsArray.js
-export const problems = [
-  // 📘 Arrays – Easy (3 real)
+export const problems = [ 
   { id: 1, title: 'Duplicate in Array', tags: ['Easy','Arrays'], link: 'https://leetcode.com/problems/find-the-duplicate-number/', status: 'unsolved' },
   { id: 2, title: 'Find Repeating and Missing', tags: ['Easy','Arrays'], link: 'https://practice.geeksforgeeks.org/problems/find-missing-and-repeating2512/1', status: 'unsolved' },
   { id: 3, title: 'Search in sorted 2D Matrix', tags: ['Easy','Arrays'], link: 'https://leetcode.com/problems/search-a-2d-matrix/', status: 'unsolved' },
-
-  // Fill up to 50 easy with placeholders
+ 
   ...Array.from({ length: 47 }, (_, i) => ({
     id: i + 4,
     title: `Easy Problem ${i + 4}`,
     tags: ['Easy', i % 2 === 0 ? 'Arrays' : 'Strings'],
     link: '#',
     status: 'unsolved',
-  })),
-
-  // ⚡ Arrays – Medium (7 real)
+  })), 
   { id: 51, title: 'Set Matrix Zeroes', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/set-matrix-zeroes/', status: 'unsolved' },
   { id: 52, title: 'Print Spiral Matrix', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/spiral-matrix/', status: 'unsolved' },
   { id: 53, title: 'Next Permutation', tags: ['Medium','Arrays'], link: 'https://leetcode.com/problems/next-permutation/', status: 'unsolved' },
@@ -22,17 +18,14 @@ export const problems = [
   { id: 55, title: 'Kadane’s Algorithm', tags: ['Medium','Arrays','DP'], link: 'https://leetcode.com/problems/maximum-subarray/', status: 'unsolved' },
   { id: 56, title: 'Stock Buy and Sell', tags: ['Medium','Greedy'], link: 'https://leetcode.com/problems/best-time-to-buy-and-sell-stock/', status: 'unsolved' },
   { id: 57, title: 'Longest Consecutive Sequence', tags: ['Medium','Hashing'], link: 'https://leetcode.com/problems/longest-consecutive-sequence/', status: 'unsolved' },
-
-  // Fill up to 30 medium with placeholders
+ 
   ...Array.from({ length: 23 }, (_, i) => ({
     id: i + 58,
     title: `Medium Problem ${i + 1}`,
     tags: ['Medium', i % 2 ? 'DP' : 'Greedy'],
     link: '#',
     status: 'unsolved',
-  })),
-
-  // 🔥 Arrays – Hard (14 real)
+  })), 
   ...[
     { title: 'Rotate Matrix', tags: ['Hard','Arrays'], link: 'https://leetcode.com/problems/rotate-image/' },
     { title: 'Pascal’s Triangle', tags: ['Hard','Math'], link: 'https://leetcode.com/problems/pascals-triangle-ii/' },
@@ -52,9 +45,7 @@ export const problems = [
     id: 81 + i,
     ...p,
     status: 'unsolved',
-  })),
-
-  // 🧩 Fill up to 250 total with mixed placeholders
+  })), 
   ...Array.from({ length: 250 - (50 + 30 + 14) }, (_, i) => ({
     id: i + 101,
     title: `Mixed Problem ${i + 1}`,
