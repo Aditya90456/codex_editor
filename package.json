@@ -61,7 +61,6 @@
     "react-toastify": "^11.0.5",
     "react-tsparticles": "^2.12.2",
     "react-use": "^17.6.0",
-    "rollup": "^4.46.2",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "tailwind-variants": "^1.0.0",
