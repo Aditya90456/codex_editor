@@ -156,6 +156,165 @@ app.post('/debug', async (req, res) => {
     res.status(500).json({ output: 'Cloud C++ debug error: ' + error.message });
   }
 });
+
+app.post("/dryrun", (req, res) => {
+  const { code } = req.body;
+  const lines = code.split("\n");
+  const steps = [];
+  let vars = {};
+  let breakTriggered = false;
+  let lastOutput = null;
+
+  function logStep(line, changed, cout = null) {
+    steps.push({ line, changed: { ...changed }, cout });
+  }
+
+  function evalCondition(expr) {
+    let cond = expr;
+    Object.keys(vars).forEach(v => cond = cond.replace(new RegExp(`\\b${v}\\b`, "g"), vars[v]));
+    let result = false;
+    try { result = eval(cond); } catch {}
+    return { cond, result };
+  }
+
+  // 🔍 Parse each line
+  lines.forEach((line, idx) => {
+    if (breakTriggered) return;
+    const trimmed = line.trim();
+
+    // 📌 Variable declaration
+    const decl = trimmed.match(/int\s+(\w+)\s*=\s*(\d+)/);
+    if (decl) {
+      vars[decl[1]] = parseInt(decl[2]);
+      logStep(idx + 1, vars);
+    }
+
+    // 📌 For Loop
+    const matchFor = trimmed.match(/for\s*\(\s*int\s+(\w+)\s*=\s*(\d+);\s*\1\s*([<>=]+)\s*(\d+);\s*\1\+\+\s*\)/);
+    if (matchFor) {
+      let iVar = matchFor[1];
+      let start = parseInt(matchFor[2]);
+      let op = matchFor[3];
+      let end = parseInt(matchFor[4]);
+      vars[iVar] = start;
+
+      while (
+        !breakTriggered &&
+        ((op === "<=" && vars[iVar] <= end) ||
+         (op === "<" && vars[iVar] < end) ||
+         (op === ">=" && vars[iVar] >= end) ||
+         (op === ">" && vars[iVar] > end))
+      ) {
+        logStep(idx + 1, vars, `Check: ${vars[iVar]} ${op} ${end} → true`);
+
+        // Loop body simulation
+        lines.forEach((bodyLine, bodyIdx) => {
+          const tBody = bodyLine.trim();
+
+          // +=, -=, *=, /=
+          const compound = tBody.match(/(\w+)\s*(\+=|-=|\*=|\/=)\s*(\w+)/);
+          if (compound) {
+            let varName = compound[1];
+            let opType = compound[2];
+            let rhs = compound[3];
+            let before = vars[varName];
+            let rhsValue = isNaN(rhs) ? vars[rhs] : parseInt(rhs);
+            if (opType === "+=") {vars[varName] = before + rhsValue;
+              
+            }
+            if (opType === "-=") vars[varName] = before - rhsValue;
+            if (opType === "*=") vars[varName] = before * rhsValue;
+            if (opType === "/=") vars[varName] = Math.floor(before / rhsValue);
+            logStep(bodyIdx + 1, vars, `${varName} = ${before} ${opType[0]} ${rhsValue} → ${vars[varName]}`);
+          }
+
+          // If
+          const matchIf = tBody.match(/if\s*\(([^)]+)\)/);
+          if (matchIf) {
+  let { cond, result } = evalCondition(matchIf[1]);
+  logStep(bodyIdx + 1, vars, `IF (${cond}) → ${result}`);
+
+  // Auto break condition
+  if (result && cond.includes("> 5")) {
+    breakTriggered = true;
+    logStep(bodyIdx + 1, vars, `Auto BREAK triggered (${cond})`);
+  }
+
+  // Else branch
+  if (!result && lines[bodyIdx + 1]?.trim().startsWith("else")) {
+    logStep(bodyIdx + 2, vars, `ELSE branch executed`);
+  }
+}
+
+          // Break
+          if (tBody.startsWith("break")) {
+            logStep(bodyIdx + 1, vars, `BREAK triggered`);
+            breakTriggered = true;
+          }
+
+          // Continue
+          if (tBody.startsWith("continue")) {
+            logStep(bodyIdx + 1, vars, `CONTINUE → Skip rest of body`);
+            return;
+          }
+
+          // Cout
+          const coutMatch = tBody.match(/cout\s*<<\s*"([^"]+)"/);
+          if (coutMatch) {
+            lastOutput = coutMatch[1];
+            logStep(bodyIdx + 1, vars, `Output: "${coutMatch[1]}"`);
+          }
+        });
+
+        // Increment i
+        let beforeI = vars[iVar];
+        vars[iVar]++;
+        logStep(idx + 1, vars, `${iVar} = ${beforeI} → ${vars[iVar]}`);
+      }
+
+      // Loop End
+      if (!breakTriggered) {
+  logStep(idx + 1, vars, `Check: ${vars[iVar]} ${op} ${end} → false`);
+  logStep(idx + 1, vars, `Loop ended`);
+
+  // 🔍 Scan remaining lines after loop
+  for (let k = idx + 1; k < lines.length; k++) {
+    let postLine = lines[k].trim();
+
+    // Final IF
+    const postIf = postLine.match(/if\s*\(([^)]+)\)/);
+    if (postIf) {
+      let { cond, result } = evalCondition(postIf[1]);
+      logStep(k + 1, vars, `Final IF (${cond}) → ${result}`);
+      continue;
+    }
+
+    // ELSE
+    if (postLine.startsWith("else")) {
+      logStep(k + 1, vars, `ELSE branch executed`);
+      continue;
+    }
+
+    // Cout after loop
+    const coutAfter = postLine.match(/cout\s*<<\s*"([^"]+)"/);
+    if (coutAfter) {
+      logStep(k + 1, vars, `Output: "${coutAfter[1]}"`);
+      lastOutput = coutAfter[1];
+      continue;
+    }
+  }
+}
+
+    }
+  });
+
+  res.json({ steps });
+});
+
+
+
+
+
 app.post('/analyze/python', async (req, res) => {
   const { code } = req.body;
   var complexity = 'O(1)'; // Placeholder for actual analysis logic
@@ -285,6 +444,7 @@ app.post('/code', authenticateToken, async (req, res) => {
   }
 });
 const PDFDocument = require('pdfkit'); 
+const { b } = require('motion/react-client');
 
  
 
@@ -323,8 +483,7 @@ app.post('/analyze', (req, res) => {
   res.json({ complexity });
 });
 
-connectDB()
-  .then(() => console.log('✅ MongoDB Connected'))
+connectDB().then(() => console.log('✅ MongoDB Connected'))
   .catch((err) => {
     console.error('❌ MongoDB Error:', err);
     process.exit(1);
