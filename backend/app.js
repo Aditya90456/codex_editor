@@ -25,7 +25,6 @@ dotenv.config();
 
 const app = express();  
 
-const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -736,4 +735,5 @@ function calculateProgress(problems) {
  * 📹 WebRTC Signaling with Socket.IO
  */
  
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
