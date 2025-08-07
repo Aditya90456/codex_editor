@@ -16,12 +16,12 @@ const { body, validationResult } = require('express-validator');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const connectDB = require('./db');
-const User = require('./models/User');
-const Problem = require('./models/problem');
-const authenticateToken = require('./middleware/auth');
+const connectDB = require('./backend/db');
+const User = require('./backend/models/User');
+const Problem = require('./backend/models/problem');
+const authenticateToken = require('./backend/middleware/auth');
 const puppeteer = require('puppeteer')
-const Codes = require('./models/Codes'); // Import Codes model
+const Codes = require('./backend/models/Codes'); // Import Codes model
 
 dotenv.config();
 
