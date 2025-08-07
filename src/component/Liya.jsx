@@ -1,72 +1,98 @@
-import React from 'react';
-import { FiExternalLink } from 'react-icons/fi';
+import React, { useState } from "react";
+import { articlesData } from "./article";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const articles = [
-  {
-    title: 'Hashing in Data Structures',
-    description: 'A comprehensive guide to Hashing in Data Structures with examples and applications.',
-    tags: ['DSA', 'Hashing', 'GeeksforGeeks'],
-    link: 'https://www.geeksforgeeks.org/dsa/hashing-data-structure/',
-  },
-  {
-    title: 'Arrays in C++',
-    description: 'Learn about arrays in C++ and how to use them effectively.',
-    tags: ['C++', 'Arrays', 'Programming'],
-    link: 'https://www.geeksforgeeks.org/arrays-in-c-cpp/',
-  },
-  {
-    title: 'Dynamic Programming Basics',
-    description: 'Get started with Dynamic Programming concepts and solve problems efficiently.',
-    tags: ['DSA', 'Dynamic Programming'],
-    link: 'https://www.geeksforgeeks.org/dynamic-programming/',
-  },
-  // 👉 Repeat for all 250 articles
-];
+export default function ArticleViewer() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedArticle, setSelectedArticle] = useState(null);
 
-function Liya() {
+  const filteredArticles = articlesData.filter((article) =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    article.stage.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 py-8">
-      <div className="w-full max-w-7xl bg-gray-800 bg-opacity-50 backdrop-blur-lg rounded-2xl p-6 shadow-2xl">
-        <h1 className="text-3xl font-extrabold text-center text-white mb-6">
-          🚀 DSA Articles on GeeksforGeeks
-        </h1>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        <input
+          type="text"
+          placeholder="🔍 Search by title or stage..."
+          className="w-full p-3 mb-6 border rounded"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {articles.map((article, index) => (
-            <div
-              key={index}
-              className="bg-gray-900 rounded-xl p-4 shadow-md hover:shadow-green-400/40 hover:scale-105 transition duration-300"
+        {selectedArticle ? (
+          <div className="bg-white p-6 rounded shadow">
+            <button
+              className="mb-4 text-blue-500"
+              onClick={() => setSelectedArticle(null)}
             >
-              <h2 className="text-lg font-bold text-white mb-2 truncate">{article.title}</h2>
-              <p className="text-gray-400 text-sm mb-3 line-clamp-2">
-                {article.description}
-              </p>
+              ← Back to all articles
+            </button>
 
-              <div className="flex flex-wrap gap-1 mb-3">
-                {article.tags.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-green-500 text-black text-xs font-semibold py-0.5 px-2 rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            <h2 className="text-2xl font-bold mb-2">{selectedArticle.title}</h2>
+            <p className="text-sm text-gray-600 mb-2">
+              📚 {selectedArticle.stage} • 🎯 {selectedArticle.level}
+            </p>
+            <p className="mb-4">{selectedArticle.description}</p>
 
+            <ReactMarkdown
+              children={selectedArticle.markdown}
+              components={{
+                code({ node, inline, className, children, ...props }) {
+                  const match = /language-(\w+)/.exec(className || "");
+                  return !inline && match ? (
+                    <SyntaxHighlighter
+                      style={oneDark}
+                      language={match[1]}
+                      PreTag="div"
+                      {...props}
+                    >
+                      {String(children).replace(/\n$/, "")}
+                    </SyntaxHighlighter>
+                  ) : (
+                    <code className={className} {...props}>
+                      {children}
+                    </code>
+                  );
+                },
+              }}
+            />
+
+            {selectedArticle.playgroundUrl && (
               <a
-                href={article.link}
+                href={selectedArticle.playgroundUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-400 hover:text-blue-300 text-sm font-medium"
+                className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded"
               >
-                Read Article <FiExternalLink className="ml-1" />
+                🚀 Try on Playground
               </a>
-            </div>
-          ))}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {filteredArticles.map((article, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedArticle(article)}
+                className="cursor-pointer bg-white p-4 rounded shadow hover:shadow-md transition"
+              >
+                <h3 className="text-lg font-semibold">{article.title}</h3>
+                <p className="text-sm text-gray-500 mb-1">
+                  {article.stage} • {article.level}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {article.description.slice(0, 60)}...
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default Liya;

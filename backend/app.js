@@ -311,6 +311,86 @@ app.post("/dryrun", (req, res) => {
   res.json({ steps });
 });
 
+// Backend dryrun route with 4-step loop breakdown
+
+app.post("/dryrun/article", (req, res) => {
+  const { code } = req.body;
+  const steps = [];
+  const vars = {};
+  let stepCounter = 1;
+
+  const lines = code.split("\n").map(line => line.trim());
+  let i = null, sum = null;
+
+  for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+    const line = lines[lineIdx];
+
+    if (line.startsWith("int sum")) {
+      sum = 0;
+      vars.sum = 0;
+      steps.push({
+        step: stepCounter++,
+        line: lineIdx + 1,
+        changed: { sum },
+        note: "sum initialized to 0",
+        highlight: "init",
+        conditions: []
+      });
+    }
+
+    if (line.startsWith("for")) {
+      for (i = 0; i < 2; i++) {
+        vars.i = i;
+        steps.push({
+          step: stepCounter++,
+          line: lineIdx + 1,
+          changed: { i },
+          note: `Loop iteration start: i = ${i}`,
+          highlight: "loop",
+          conditions: [`i < 2 is ${i < 2}`]
+        });
+
+        sum += i;
+        vars.sum = sum;
+        steps.push({
+          step: stepCounter++,
+          line: lineIdx + 2,
+          changed: { sum },
+          note: `sum += i (sum = ${sum})`,
+          highlight: "update",
+          conditions: []
+        });
+      }
+
+      steps.push({
+        step: stepCounter++,
+        line: lineIdx + 1,
+        note: `Loop ended as i = ${i} and i < 2 is false`,
+        highlight: "exit",
+        conditions: [`i < 2 is false`]
+      });
+    }
+
+    if (line.includes("cout")) {
+      steps.push({
+        step: stepCounter++,
+        line: lineIdx + 1,
+        cout: `${sum}`,
+        note: "Final output printed",
+        highlight: "output",
+        conditions: []
+      });
+    }
+  }
+
+  res.json({ steps });
+});
+
+
+
+
+
+
 
 
 
@@ -444,7 +524,7 @@ app.post('/code', authenticateToken, async (req, res) => {
   }
 });
 const PDFDocument = require('pdfkit'); 
-const { b } = require('motion/react-client');
+const { b, i } = require('motion/react-client');
 
  
 
