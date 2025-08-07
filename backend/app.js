@@ -1,6 +1,4 @@
-﻿const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
+﻿const express = require('express');  
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const PythonShell  =require('python-shell');
@@ -25,14 +23,7 @@ const Codes = require('./models/Codes'); // Import Codes model
 
 dotenv.config();
 
-const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST'],
-  },
-});
+const app = express();  
 
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
@@ -744,27 +735,5 @@ function calculateProgress(problems) {
 /**
  * 📹 WebRTC Signaling with Socket.IO
  */
-io.on('connection', (socket) => {
-  console.log('📡 Client connected');
-
-  socket.on('offer', (offer) => {
-    socket.broadcast.emit('offer', offer);
-  });
-
-  socket.on('answer', (answer) => {
-    socket.broadcast.emit('answer', answer);
-  });
-
-  socket.on('candidate', (candidate) => {
-    socket.broadcast.emit('candidate', candidate);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('❌ Client disconnected');
-  });
-});
-
-/**
- * 🚀 Start Server
- */ 
+ 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
