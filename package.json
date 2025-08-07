@@ -28,7 +28,7 @@
     "body-parser": "^2.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cookie-parser": "^1.4.7", 
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "esbuild": "^0.25.8",
