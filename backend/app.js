@@ -16,12 +16,12 @@ const { body, validationResult } = require('express-validator');
 const dotenv = require('dotenv');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-const connectDB = require('./backend/db');
-const User = require('./backend/models/User');
-const Problem = require('./backend/models/problem');
-const authenticateToken = require('./backend/middleware/auth');
+const connectDB = require('./db');
+const User = require('./models/User');
+const Problem = require('./models/problem');
+const authenticateToken = require('./middleware/auth');
 const puppeteer = require('puppeteer')
-const Codes = require('./backend/models/Codes'); // Import Codes model
+const Codes = require('./models/Codes'); // Import Codes model
 
 dotenv.config();
 
@@ -164,6 +164,8 @@ app.post("/dryrun", (req, res) => {
   let vars = {};
   let breakTriggered = false;
   let lastOutput = null;
+
+
 
   function logStep(line, changed, cout = null) {
     steps.push({ line, changed: { ...changed }, cout });
@@ -764,7 +766,5 @@ io.on('connection', (socket) => {
 
 /**
  * 🚀 Start Server
- */
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+ */ 
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
