@@ -1,187 +1,119 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
-import { FaPlay, FaTrash, FaSave, FaBug, FaChartLine, FaGithub } from 'react-icons/fa'
+import React, { useState, useEffect } from "react";
+import Editor from "@monaco-editor/react";
+import { FaPlay, FaSave, FaTrash } from "react-icons/fa";
 
-function Python() {
-  const [code, setCode] = useState(`# Write your Python code here\nprint("Hello, CodeX!")`)
-  const [filename, setFilename] = useState('snippet.py')
-  const [output, setOutput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [githubUrl, setGithubUrl] = useState('')
+export default function PythonEditorWithRun() {
+  const [code, setCode] = useState(`# Write your Python code here\nprint("Hello, CodeX!")`);
+  const [filename, setFilename] = useState("snippet.py");
+  const [stdin, setStdin] = useState("");
+  const [output, setOutput] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Run code on server
   const runCode = async () => {
-    setLoading(true)
-    setOutput('💻 Running your code...')
+    setLoading(true);
+    setOutput("Running...");
     try {
-      const res = await fetch('http://localhost:5000/run/python', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-      const data = await res.json()
-      setOutput(data.output || data.error)
+      const res = await fetch("http://localhost:5000/run/python", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, stdin }),
+      });
+      const data = await res.json();
+      // backend returns { output, error, timeout }
+      if (data.error) {
+        setOutput(`❌ Error:\n${data.error}`);
+      } else if (data.timeout) {
+        setOutput("⏱️ Execution timed out.");
+      } else {
+        setOutput(String(data.output ?? ""));
+      }
     } catch (err) {
-      setOutput('❌ Error: Unable to connect to server.')
+      setOutput(`❌ Network error: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false)
-  }
+  };
 
-  const debugCode = async () => {
-    setLoading(true)
-    setOutput('🪛 Debugging your code...')
-    try {
-      const res = await fetch('http://localhost:5000/debug/python', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-      const data = await res.json()
-      setOutput(data.output || '✅ Debug finished')
-    } catch (err) {
-      setOutput('❌ Debug Error: ' + err.message)
-    }
-    setLoading(false)
-  }
-
-  const analyzeCode = async () => {
-    setLoading(true)
-    setOutput('📊 Analyzing time complexity...')
-    try {
-      const res = await fetch('http://localhost:5000/analyze/python', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-      const data = await res.json()
-      setOutput(`🕒 Estimated Time Complexity: ${data.complexity || 'Unknown'}`)
-    } catch (err) {
-      setOutput('❌ Analysis Error: ' + err.message)
-    }
-    setLoading(false)
-  }
+  // Keyboard shortcut: Ctrl/Cmd+Enter to run
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runCode();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [code, stdin]);
 
   const clearCode = () => {
-    setCode('')
-    setOutput('')
-    setGithubUrl('')
-  }
-const saveCode = () => {
-  const savedSnippets = JSON.parse(localStorage.getItem('codex_snippets') || '[]')
+    setCode("");
+    setOutput("");
+  };
 
-  const newSnippet = {
-    id: Date.now(),         // Unique ID
-    filename: filename || 'snippet.py',
-    code,
-    description: 'User saved code snippet',
-    lang: 'python',
-    savedAt: new Date().toLocaleString()
-  }
-
-  savedSnippets.push(newSnippet)
-  localStorage.setItem('codex_snippets', JSON.stringify(savedSnippets))
-
-  console.log('✅ Saved to Local Storage:', newSnippet)
-  setOutput(`✅ Code saved locally as "${newSnippet.filename}"`)
-}
-
+  const saveCode = () => {
+    const snippets = JSON.parse(localStorage.getItem("python_snippets") || "[]");
+    snippets.push({ id: Date.now(), filename, code, savedAt: new Date().toLocaleString() });
+    localStorage.setItem("python_snippets", JSON.stringify(snippets));
+    setOutput(`✅ Saved as "${filename}"`);
+  };
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white flex flex-col px-4 py-6">
-      {/* Decorative Blobs */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-600 rounded-full filter blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500 rounded-full filter blur-3xl opacity-10 animate-pulse"></div>
+    <div className="min-h-screen w-full mt-9 p-6 bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+      <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+        <input
+          type="text"
+          value={filename}
+          onChange={(e) => setFilename(e.target.value)}
+          placeholder="filename (e.g., main.py)"
+          className="p-2 rounded bg-gray-800 border border-gray-600"
+        />
+        <button onClick={runCode} disabled={loading} className="px-4 py-2 rounded bg-green-500 hover:bg-green-600">
+          <FaPlay style={{ marginRight: 8 }} /> {loading ? "Running..." : "Run (Ctrl+Enter)"}
+        </button>
+        <button onClick={saveCode} className="px-3 py-2 rounded bg-indigo-500 hover:bg-indigo-600"><FaSave /></button>
+        <button onClick={clearCode} className="px-3 py-2 rounded bg-red-500 hover:bg-red-600"><FaTrash /></button>
+      </div>
 
-      {/* Header */}
-      <motion.div
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6 }}
-        className="backdrop-blur-lg bg-white/10 border-b border-white/20 rounded-2xl p-4 mt-3 flex justify-between items-center shadow-lg"
-      >
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
-          🐍 Python Editor
-        </h1>
-        <div className="flex gap-3 flex-wrap">
-          <button
-            onClick={runCode}
-            disabled={loading}
-            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg shadow-md transition duration-300 disabled:opacity-50"
-          >
-            <FaPlay /> {loading ? 'Running...' : 'Run'}
-          </button>
-          <button
-            onClick={debugCode}
-            disabled={loading}
-            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg shadow-md transition duration-300 disabled:opacity-50"
-          >
-            <FaBug /> Debug
-          </button>
-          <button
-            onClick={analyzeCode}
-            disabled={loading}
-            className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded-lg shadow-md transition duration-300 disabled:opacity-50"
-          >
-            <FaChartLine /> Analyze
-          </button>
-          <button
-            onClick={saveCode}
-            disabled={saving}
-            className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 px-4 py-2 rounded-lg shadow-md transition duration-300 disabled:opacity-50"
-          >
-            <FaSave /> {saving ? 'Saving...' : 'Save'}
-          </button>
-          <button
-            onClick={clearCode}
-            className="flex items-center gap-2 bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg shadow-md transition duration-300"
-          >
-            <FaTrash /> Clear
-          </button>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 12 }}>
+        <div>
+          <Editor
+            height="60vh"
+            language="python"
+            theme="vs-dark"
+            value={code}
+            onChange={(val) => setCode(val || "")}
+            options={{ fontSize: 14, minimap: { enabled: false }, automaticLayout: true }}
+          />
+
+          <div style={{ marginTop: 8 }}>
+            <label style={{ display: "block", marginBottom: 6 }}>Custom stdin (optional)</label>
+            <textarea
+              value={stdin}
+              onChange={(e) => setStdin(e.target.value)}
+              rows={4}
+              style={{ width: "100%", fontFamily: "monospace", padding: 8, borderRadius: 6 }}
+            />
+          </div>
         </div>
-      </motion.div>
 
-      {/* Filename Input */}
-      <input
-        type="text"
-        placeholder="Enter filename (e.g., hello.py)"
-        className="mt-3 mb-3 w-full p-2 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        value={filename}
-        onChange={(e) => setFilename(e.target.value)}
-      />
+        <div>
+          <div style={{ background: "#0b1220", padding: 12, borderRadius: 8, minHeight: 180 }}>
+            <div style={{ fontSize: 14, marginBottom: 6 }}>Output</div>
+            <pre style={{ whiteSpace: "pre-wrap", color: "#d1f1c6" }}>{output || "No output yet. Click Run."}</pre>
+          </div>
 
-      {/* Code Editor */}
-      <motion.textarea
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        className="flex-1 w-full bg-gray-900/50 text-white p-4 rounded-xl border border-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-inner font-mono text-sm resize-none"
-        rows="15"
-      ></motion.textarea>
-
-      {/* Output */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="mt-4 backdrop-blur-lg bg-white/10 border border-white/20 rounded-xl p-4 shadow-lg"
-      >
-        <h2 className="text-xl font-semibold mb-2">📝 Output:</h2>
-        <pre className="whitespace-pre-wrap text-green-300">{output || 'Output will appear here...'}</pre>
-        {githubUrl && (
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-3 text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            <FaGithub /> View on GitHub
-          </a>
-        )}
-      </motion.div>
+          <div style={{ marginTop: 12 }}>
+            <div style={{ fontSize: 13, color: "#ccc", marginBottom: 6 }}>Tips</div>
+            <ul style={{ color: "#ddd", fontSize: 13 }}>
+              <li>Ctrl/Cmd + Enter to run</li>
+              <li>Server must be running at <code>http://localhost:5000</code></li>
+              <li>Use small inputs; untrusted code should be sandboxed in production</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
-
-export default Python

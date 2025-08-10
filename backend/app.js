@@ -724,6 +724,152 @@ app.get('/prob', authenticateToken, async (req, res) => {
   }
 });
 
+  // Save Python code to a temp file
+app.post('/run/python', (req, res) => {
+  const { code } = req.body;
+  const filePath = path.join(__dirname, 'temp_code.py');
+  fs.writeFileSync(filePath, code);
+
+  const pythonProcess = spawn('python', [filePath]);
+
+  let output = '';
+  pythonProcess.stdout.on('data', (data) => {
+    output += data.toString();
+  });
+  pythonProcess.stderr.on('data', (data) => {
+    output += data.toString();
+  });
+  pythonProcess.on('close', () => {
+    res.json({ output });
+  });
+});
+
+// ================== DRY RUN PYTHON ==================
+const { spawn } = require('child_process'); 
+
+app.post('/dryrun/python', (req, res) => {
+  const { code } = req.body;
+  if (!code) {
+    return res.status(400).json({ error: 'No Python code provided' });
+  }
+
+  const filePath = path.join(__dirname, 'temp_dryrun.py');
+  const tracerPath = path.join(__dirname, 'tracer.py');
+
+  // Save Python code to temp file
+  fs.writeFile(filePath, code, (err) => {
+    if (err) {
+      console.error('Error writing Python file:', err);
+      return res.status(500).json({ error: 'Failed to save Python file' });
+    }
+
+    // Spawn Python process with tracer
+    const pythonProcess = spawn('python', [tracerPath, filePath], {
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    let stdoutData = '';
+    let stderrData = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      stdoutData += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      stderrData += data.toString();
+    });
+
+    pythonProcess.on('close', (exitCode) => {
+      if (exitCode !== 0) {
+        return res.status(400).json({
+          error: 'Python execution failed',
+          details: stderrData.trim()
+        });
+      }
+
+      try {
+        const steps = JSON.parse(stdoutData);
+        return res.json({ steps });
+      } catch (parseErr) {
+        console.error('Parse error:', parseErr);
+        return res.status(500).json({
+          error: 'Failed to parse tracer output',
+          rawOutput: stdoutData.trim()
+        });
+      }
+    });
+  });
+});
+
+let latestJavaVersion = null;
+
+// Fetch the latest Java runtime from Piston
+async function fetchLatestJavaRuntime() {
+  try {
+    const { data } = await axios.get("https://emkc.org/api/v2/piston/runtimes");
+    const javaRuntimes = data.filter(r => r.language === "java");
+
+    if (javaRuntimes.length > 0) {
+      // Pick the highest version (last in sorted list)
+      latestJavaVersion = javaRuntimes.sort((a, b) =>
+        a.version.localeCompare(b.version, undefined, { numeric: true })
+      )[javaRuntimes.length - 1].version;
+      console.log(`✅ Using latest Java runtime: ${latestJavaVersion}`);
+    } else {
+      console.error("❌ No Java runtimes found from Piston");
+    }
+  } catch (err) {
+    console.error("❌ Failed to fetch runtimes:", err.message);
+  }
+}
+
+// Run this on startup
+fetchLatestJavaRuntime();
+
+app.post("/run/java", async (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: "Code is required" });
+
+  try {
+    if (!latestJavaVersion) {
+      await fetchLatestJavaRuntime();
+      if (!latestJavaVersion) throw new Error("Java runtime not available");
+    }
+
+    const response = await axios.post(
+      "https://emkc.org/api/v2/piston/execute",
+      {
+        language: "java",
+        version: latestJavaVersion, // ✅ Always latest
+        files: [
+          {
+            name: "Main.java",
+            content: code,
+          },
+        ],
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const result = response.data;
+    res.json({
+      output:
+        result.run.stdout ||
+        result.run.stderr ||
+        "✅ Program executed successfully. No output.",
+    });
+  } catch (error) {
+    console.error("❌ Cloud Java Error:", error.response?.data || error.message);
+    res
+      .status(500)
+      .json({ output: "Cloud Java error: " + error.message });
+  }
+});
+
+
+
+
+
 function calculateProgress(problems) {
   const total = problems.length;
   const solved = problems.reduce((acc, p) => acc + (p.solved ? 1 : 0), 0);
@@ -734,6 +880,7 @@ function calculateProgress(problems) {
 /**
  * 📹 WebRTC Signaling with Socket.IO
  */
+
  
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

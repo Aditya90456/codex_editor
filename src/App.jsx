@@ -21,6 +21,7 @@ import JavaScriptEditor from './component/Js'
 import Roadmap from './component/Roadmap'  
 import { motion } from 'framer-motion'
 import DSARoadmapLanding from './component/Roadmapdsa'
+import Java from './component/Java'
 function App() {
   const router = createBrowserRouter([
     {
@@ -377,6 +378,28 @@ function App() {
           <DSARoadmapLanding />
         </motion.div>
       </motion.div>
+      </>
+    )
+  },
+  {
+    path: '/java',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Java />
+          </motion.div>
+        </motion.div>
       </>
     )
   }
