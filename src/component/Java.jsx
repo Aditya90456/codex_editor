@@ -32,7 +32,7 @@ export default function JavaEditor() {
   const saveCode = () => setOutput("Code saved successfully!");
 
   return (
-    <div className={`min-h-screen flex flex-col items-center justify-center gap-8 transition-colors duration-500 ${theme === "dark" ? "bg-gradient-to-br from-gray-900 via-black to-gray-800" : "bg-gradient-to-br from-yellow-50 to-white"}`}>
+    <div className={`min-h-screen flex mt-9 flex-col items-center justify-center gap-8 transition-colors duration-500 ${theme === "dark" ? "bg-gradient-to-br from-gray-900 via-black to-gray-800" : "bg-gradient-to-br from-yellow-50 to-white"}`}>
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -42,7 +42,7 @@ export default function JavaEditor() {
         <div className="flex flex-col items-center gap-1">
           <div className="flex items-center gap-3 text-2xl font-bold">
             <FaJava className={`${theme === "dark" ? "text-orange-400" : "text-orange-600"}`} size={32} />
-            <span className={`${theme === "dark" ? "text-white" : "text-gray-900"}`}>Java Runner</span>
+            <span className={`${theme === "dark" ? "text-white" : "text-gray-900"}`}>Java Playground </span>
           </div>
           <div className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
             Runtime: {javaVersion}
