@@ -1,63 +1,99 @@
+import React from "react";
 import { Link } from "react-router-dom";
-import { FaBolt, FaBrain, FaTrophy } from "react-icons/fa";
+import { FaBolt, FaBrain, FaTrophy, FaChevronRight } from "react-icons/fa";
 
+// Main landing page component for the Codex DSA platform.
+// This design features a clean, two-column layout for a modern,
+// professional aesthetic. It is fully responsive and uses Tailwind CSS.
 function CodexDSALanding() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] via-[#0f172a] to-[#1e293b] text-white flex flex-col justify-center items-center px-6 relative overflow-hidden">
-      {/* 🌟 Background Glow */}
-      <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-pink-500 to-purple-700 rounded-full opacity-30 blur-3xl"></div>
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-400 to-cyan-500 rounded-full opacity-20 blur-3xl"></div>
+    // Main container with a dark background and full-screen height.
+    <div className="relative min-h-screen bg-[#0c0d12] text-gray-100 flex items-center justify-center p-4 md:p-8 overflow-hidden font-inter">
+      
+      {/* Subtle background glow effect for visual depth */}
+      <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-purple-500 rounded-full opacity-5 blur-3xl transform -translate-x-1/2 -translate-y-1/2 animate-pulse-slow"></div>
 
-      {/* 🏷️ Top Badge */}
-      <div className="mt-10 mb-4">
-        <span className="px-4 py-1 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 text-sm font-semibold shadow-lg">
-          ✨ Premium DSA Builder
-        </span>
+      {/* Main content container, centered and responsive */}
+      <div className="z-10 w-full max-w-7xl">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+          
+          {/* Left Column: Text Content and CTA */}
+          <div className="md:w-1/2 text-center md:text-left">
+            
+            {/* Top badge */}
+            <div className="mb-4">
+              <span className="px-4 py-1.5 rounded-full bg-gray-800 text-sm font-semibold text-gray-300 border border-gray-700 shadow-xl">
+                CODEX
+              </span>
+            </div>
+
+            {/* Main Heading */}
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 tracking-tight">
+              Level Up Your{" "}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                DSA Skills
+              </span>
+            </h1>
+
+            {/* Subtitle/Description */}
+            <p className="max-w-xl mx-auto md:mx-0 text-lg text-gray-400 font-light mb-8">
+              Start your DSA journey today — build confidence, solve problems, and ace
+              interviews step by step. We’ll help you finish strong.
+            </p>
+
+            {/* The heading element */}
+            <h2 className="text-2xl font-bold text-white mb-6">
+              heading
+            </h2>
+
+            {/* Feature badges section */}
+            <div className="mt-12 flex flex-wrap justify-center md:justify-start gap-6">
+              <FeatureBadge
+                icon={<FaBrain className="text-xl text-purple-400" />}
+                text="Curated Problems"
+              />
+              <FeatureBadge
+                icon={<FaBolt className="text-xl text-blue-400" />}
+                text="5 Progressive Tiers"
+              />
+              <FeatureBadge
+                icon={<FaTrophy className="text-xl text-yellow-400" />}
+                text="Perfect for Beginners"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Visual Element */}
+          <div className="md:w-1/2 flex items-center justify-center p-8">
+            <div className="w-full max-w-md h-72 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500 ease-in-out">
+              <div className="w-full h-full p-6 flex flex-col justify-end items-start text-white">
+                <span className="text-4xl font-bold">DSA Roadmap</span>
+                <span className="text-sm font-medium mt-2 opacity-80">Your path to mastering data structures and algorithms.</span>
+                <span className="mt-4 px-3 py-1 rounded-full text-xs font-semibold bg-white/20">Learn More</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-20 text-gray-500 text-center text-xs">
+          © 2025 CodeX by Aditya | DSA Powered by CodeX Playground
+        </footer>
       </div>
-
-      {/* 📝 Heading */}
-      <h1 className="text-4xl md:text-6xl font-extrabold text-center leading-tight mb-6">
-        Level Up Your <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">DSA Skills</span><br />
-        with the <span className="text-pink-400">280 Problem Sheet</span>
-      </h1>
-
-      {/* 🌟 Merged Subtext */}
-      <p className="text-center max-w-2xl mb-8 text-lg bg-gradient-to-r from-white to-blue-400 bg-clip-text text-transparent font-medium">
-        Start your DSA journey today — build confidence, solve problems, and ace interviews step by step. We’ll help you finish strong.
-      </p>
-
-      {/* 🚀 Button */}
-      <div className="flex justify-center mb-10">
-        <Link
-          to="/start"
-          className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-medium shadow-lg hover:from-pink-600 hover:to-purple-700 transition"
-        >
-          🚀 Start Solving Now
-        </Link>
-      </div>
-
-      {/* 🏆 Features */}
-      <div className="flex flex-wrap justify-center gap-6">
-        <FeatureBadge icon={<FaBrain />} text="280+ Curated Problems" />
-        <FeatureBadge icon={<FaBolt />} text="5 Progressive Tiers" />
-        <FeatureBadge icon={<FaTrophy />} text="Perfect for Beginners" />
-      </div>
-
-      {/* 🔥 Footer */}
-      <footer className="text-gray-500 mt-16 text-center text-sm">
-        © 2025 CodeX by Aditya | DSA Powered by CodeX Playground 
-      </footer>
     </div>
   );
 }
 
+// Reusable component for displaying a single feature.
+// It is now a more compact, horizontal badge.
 function FeatureBadge({ icon, text }) {
   return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 backdrop-blur-md shadow text-gray-100">
+    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700/50 backdrop-blur-md shadow-lg text-center transform transition-all duration-300 ease-in-out hover:bg-gray-700/50 hover:scale-105">
       {icon}
-      <span>{text}</span>
+      <span className="text-sm font-medium text-gray-300">{text}</span>
     </div>
   );
 }
 
+// Export the main component for use in other parts of the application.
 export default CodexDSALanding;

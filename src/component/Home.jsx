@@ -94,7 +94,7 @@ function PremiumDashboard() {
       color: "text-red-400",
       title: "DSA Roadmap",
       description: "Master DSA with structured learning and 300+ coding problems.",
-      link: "/dsaroadmap",
+      link: "/start",
     },
     {
       Icon: FaLaptopCode,
