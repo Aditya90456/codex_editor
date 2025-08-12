@@ -812,6 +812,8 @@ async function fetchLatestJavaRuntime() {
     if (javaRuntimes.length > 0) {
       // Pick the highest version (last in sorted list)
 
+    
+      
       
       latestJavaVersion = javaRuntimes.sort((a, b) =>
         a.version.localeCompare(b.version, undefined, { numeric: true })
