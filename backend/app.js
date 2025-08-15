@@ -516,7 +516,7 @@ app.post('/code', authenticateToken, async (req, res) => {
   }
 });
 const PDFDocument = require('pdfkit'); 
-const { b, i } = require('motion/react-client');
+const { b, i, a } = require('motion/react-client');
 
  
 
@@ -630,7 +630,38 @@ app.get('/user', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.post('/run/js', async (req, res) => {
+  const { code, stdin } = req.body;
+  
+  if (!code) {
+    return res.status(400).json({ message: 'Code is required' });
+  }
 
+  try {
+    const response = await axios.post(
+      'https://emkc.org/api/v2/piston/execute',
+      {
+        language: 'javascript',
+        version: '*', // Let Piston use the latest version
+        files: [
+          { name: 'main.js', content: code }
+        ],
+        stdin: stdin || ''
+      }
+    );
+
+    const result = response.data;
+
+    res.json({
+      output: result.run?.output || '',
+      error: result.run?.stderr || null
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error running JavaScript code', error: err.message });
+  }
+});
 /**
  * 🧠 Gemini AI Chat API
  */
@@ -813,6 +844,7 @@ async function fetchLatestJavaRuntime() {
       // Pick the highest version (last in sorted list)
 
     
+
       
       
       latestJavaVersion = javaRuntimes.sort((a, b) =>
@@ -884,6 +916,76 @@ function calculateProgress(problems) {
 /**
  * 📹 WebRTC Signaling with Socket.IO
  */
+async function saveAudioFromText(text, filename) {
+  // You can integrate TTS API here (Google Cloud TTS or OpenAI TTS)
+  const filePath = path.join("audio", `${filename}.mp3`);
+  fs.writeFileSync(filePath, text); // TEMP: saving raw text (replace with TTS output)
+  return filePath;
+}
+
+// /api/run — Execute code + Explain
+app.post("/api/run", async (req, res) => {
+  try {
+    const { code, language } = req.body;
+
+    const explanation = await askGemini(
+      `Explain this ${language} code in detail:\n\n${code}`
+    );
+
+    const audioFile = await saveAudioFromText(explanation, "run_explanation");
+
+    res.json({
+      status: "success",
+      explanation,
+      audioFile
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error processing /api/run" });
+  }
+});
+
+// /api/debug — Find & fix errors
+app.post("/api/debug", async (req, res) => {
+  try {
+    const { code, language, errorOutput } = req.body;
+
+    const debugSuggestion = await askGemini(
+      `The following ${language} code has an error:\n\n${code}\n\nError:\n${errorOutput}\n\nPlease explain the issue and suggest fixes.`
+    );
+
+    const audioFile = await saveAudioFromText(debugSuggestion, "debug_explanation");
+
+    res.json({
+      status: "success",
+      debugSuggestion,
+      audioFile
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error processing /api/debug" });
+  }
+});
+app.post('api/ai',authenticateToken, async (req, res) => {
+  const { code } = req.body;
+
+  if (!code || typeof code !== 'string') {
+    return res.status(400).json({ message: '❗ Invalid or missing code.' });
+  }
+
+  try {
+    console.log(`📝 code received: "${code}" from user ${req.user?.id}`);
+    const reply = await callGeminiWithRetry(code);
+
+    res.status(200).json({ reply });
+  } catch (error) {
+    console.error('❌ Gemini API Error:', error);
+    res.status(500).json({
+      message: 'Error calling Gemini API',
+      error: error.message || 'Unknown error',
+    });
+  }
+});
 
  
 const PORT = process.env.PORT || 5000;

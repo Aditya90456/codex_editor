@@ -23,6 +23,7 @@ import { motion } from 'framer-motion'
 import DSARoadmapLanding from './component/Roadmapdsa'
 import Java from './component/Java'
 import Start from './component/Start'
+import Playground from './component/Playground'
 function App() {
   const router = createBrowserRouter([
     {
@@ -421,6 +422,28 @@ function App() {
             transition={{ duration: 0.5 }}
           >
             <Start />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path: '/playground',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Playground />
           </motion.div>
         </motion.div>
       </>
