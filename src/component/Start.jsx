@@ -1,526 +1,453 @@
-import React, { useState, useEffect } from "react";
-import { FaBolt, FaBrain, FaTrophy, FaCheckCircle, FaSpinner, FaBookOpen, FaChevronDown, FaChevronUp, FaTimes } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Trophy, CheckCircle2, Circle, ChevronDown, Download, Search, ChevronRight } from "lucide-react";
 
-// Main landing page component for the Codex DSA platform.
-function CodexDSALanding() {
-  return (
-    <div className="relative bg-[#070914] text-gray-100 flex items-center justify-center p-4 md:p-8 font-inter overflow-hidden">
-      {/* Dynamic background effect */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900 via-transparent to-transparent opacity-20"></div>
-      <div className="z-10 w-full max-w-7xl">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-          <div className="md:w-1/2 text-center md:text-left">
-            <div className="mb-4">
-              <span className="px-4 py-1.5 rounded-full bg-slate-800/60 text-sm font-semibold text-gray-300 backdrop-blur-sm border border-slate-700 shadow-xl">
-                CODEX
-              </span>
-            </div>
-            {/* Awesome Heading with Gradient and Shadow */}
-            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 tracking-tight">
-              Level Up Your{" "}
-              <span 
-                className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500 bg-clip-text text-transparent"
-                style={{ textShadow: '2px 2px 8px rgba(128, 0, 128, 0.4)' }}
-              >
-                DSA Skills
-              </span>
-            </h1>
-            <p className="max-w-xl mx-auto md:mx-0 text-lg text-gray-400 font-light mb-8">
-              Start your DSA journey today — build confidence, solve problems, and ace
-              interviews step by step. We’ll help you finish strong.
-            </p>
-            <h2 className="text-2xl font-bold text-white mb-6">
-              Heading
-            </h2>
-            <div className="mt-12 flex flex-wrap justify-center md:justify-start gap-6">
-              <FeatureBadge
-                icon={<FaBrain className="text-xl text-indigo-400" />}
-                text="Curated Problems"
-              />
-              <FeatureBadge
-                icon={<FaBolt className="text-xl text-cyan-400" />}
-                text="5 Progressive Tiers"
-              />
-              <FeatureBadge
-                icon={<FaTrophy className="text-xl text-yellow-400" />}
-                text="Perfect for Beginners"
-              />
-            </div>
-          </div>
-          <div className="md:w-1/2 flex items-center justify-center p-8">
-            <div
-              className="w-full max-w-md h-72 rounded-3xl bg-gradient-to-br from-indigo-700 to-cyan-500 shadow-2xl transform rotate-3 transition-transform duration-500 ease-in-out"
-            >
-              <div className="w-full h-full p-6 flex flex-col justify-end items-start text-white">
-                <span className="text-4xl font-bold">DSA Roadmap</span>
-                <span className="text-sm font-medium mt-2 opacity-80">Your path to mastering data structures and algorithms.</span>
-                <span className="mt-4 px-3 py-1 rounded-full text-xs font-semibold bg-white/20">Learn More</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <footer className="mt-20 text-gray-500 text-center text-xs">
-          © 2025 CodeX by Aditya | DSA Powered by CodeX Playground
-        </footer>
-      </div>
-    </div>
-  );
-}
+/**
+ * DSA Roadmap – Dark Only, Fancy, Collapsible, Sidebar, Search, Export
+ * - Pure React + Tailwind + Framer Motion
+ * - Dark-only neon look
+ * - Collapsible sections with per-topic + overall progress
+ * - Subtopic checkboxes (persisted via localStorage)
+ * - Left sidebar for quick navigation + per-topic progress
+ * - Search to filter subtopics (live highlight)
+ * - Export JSON of your progress
+ */
 
-// Reusable component for displaying a single feature.
-function FeatureBadge({ icon, text }) {
-  return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/60 border border-slate-700/50 backdrop-blur-md shadow-lg text-center transform transition-all duration-300 ease-in-out hover:bg-slate-700/50 hover:scale-105">
-      {icon}
-      <span className="text-sm font-medium text-gray-300">{text}</span>
-    </div>
-  );
-}
-
-const initialStages = [
+// ---------- Roadmap Data (Topics + Subtopics) ----------
+const INITIAL_TOPICS = [
   {
-    title: "Foundation",
-    topics: [
-      { name: "Arrays", estimatedDays: 7, resources: { TUF: "https://takeuforward.org/arrays/arrays-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/array/", GFG: "https://www.geeksforgeeks.org/array-data-structure/" }, status: "not-started" },
-      { name: "Strings", estimatedDays: 5, resources: { TUF: "https://takeuforward.org/strings/strings-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/string/", GFG: "https://www.geeksforgeeks.org/string-data-structure/" }, status: "not-started" },
-      { name: "Basic Math", estimatedDays: 4, resources: { TUF: "https://takeuforward.org/maths/basic-maths-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/problemset/all/?topicSlugs=math", GFG: "https://www.geeksforgeeks.org/mathematical-programming-for-interviews/" }, status: "not-started" },
+    id: "arrays",
+    title: "Arrays",
+    level: "Basics",
+    desc: "Traversal, two pointers, prefix/suffix tricks, sliding window.",
+    accent: "from-sky-500 to-cyan-500",
+    subs: [
+      { id: "a1", text: "Reverse array / rotate array", link: "#", done: false },
+      { id: "a2", text: "Max subarray (Kadane)", link: "#", done: false },
+      { id: "a3", text: "Two-sum / Two pointers", link: "#", done: false },
+      { id: "a4", text: "Sliding window (fixed/variable)", link: "#", done: false },
     ],
-    startDate: "",
-    endDate: "",
   },
   {
-    title: "Core DSA",
-    topics: [
-      { name: "Linked Lists", estimatedDays: 6, resources: { TUF: "https://takeuforward.org/linked-list/linked-list-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/linked-list/", GFG: "https://www.geeksforgeeks.org/data-structures/linked-list/" }, status: "not-started" },
-      { name: "Stacks & Queues", estimatedDays: 5, resources: { TUF: "https://takeuforward.org/stack-queue/stack-queue-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/stack/", GFG: "https://www.geeksforgeeks.org/stack-data-structure/" }, status: "not-started" },
-      { name: "Recursion", estimatedDays: 8, resources: { TUF: "https://takeuforward.org/recursion/recursion-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/explore/learn/card/recursion-i/", GFG: "https://www.geeksforgeeks.org/introduction-to-recursion-2/" }, status: "not-started" },
-      { name: "Sorting & Searching", estimatedDays: 7, resources: { TUF: "https://takeuforward.org/sorting-searching/sorting-searching-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/problem-list/sort/", GFG: "https://www.geeksforgeeks.org/sorting-algorithms/" }, status: "not-started" },
-      { name: "Trees & BST", estimatedDays: 10, resources: { TUF: "https://takeuforward.org/binary-tree/binary-tree-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/tree/", GFG: "https://www.geeksforgeeks.org/binary-tree-data-structure/" }, status: "not-started" },
-      { name: "Hashing", estimatedDays: 4, resources: { TUF: "https://takeuforward.org/hashing/hashing-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/hash-table/", GFG: "https://www.geeksforgeeks.org/hashing-data-structure/" }, status: "not-started" },
-      { name: "Graphs", estimatedDays: 12, resources: { TUF: "https://takeuforward.org/graph/graph-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/graph/", GFG: "https://www.geeksforgeeks.org/graph-data-structure-and-algorithms/" }, status: "not-started" },
+    id: "strings",
+    title: "Strings",
+    level: "Core",
+    desc: "Hashing, frequency maps, two pointers, substring patterns.",
+    accent: "from-fuchsia-500 to-violet-500",
+    subs: [
+      { id: "s1", text: "Anagram / frequency counter", link: "#", done: false },
+      { id: "s2", text: "Longest substring (sliding window)", link: "#", done: false },
+      { id: "s3", text: "String hashing (basic)", link: "#", done: false },
+      { id: "s4", text: "KMP / Z (choose one)", link: "#", done: false },
     ],
-    startDate: "",
-    endDate: "",
   },
   {
-    title: "Advanced",
-    topics: [
-      { name: "Dynamic Programming", estimatedDays: 15, resources: { TUF: "https://takeuforward.org/dynamic-programming/dynamic-programming-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/dynamic-programming/", GFG: "https://www.geeksforgeeks.org/dynamic-programming/" }, status: "not-started" },
-      { name: "Tries", estimatedDays: 5, resources: { TUF: "https://takeuforward.org/tries/tries-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/trie/", GFG: "https://www.geeksforgeeks.org/trie-data-structure/" }, status: "not-started" },
-      { name: "Segment Trees", estimatedDays: 8, resources: { TUF: "https://takeuforward.org/segment-tree/segment-tree-a2z-dsa-sheet/", LeetCode: "https://leetcode.com/tag/segment-tree/", GFG: "https://www.geeksforgeeks.org/segment-tree-data-structure-and-algorithms/" }, status: "not-started" },
-      { name: "Advanced Graph Algorithms", estimatedDays: 10, resources: { TUF: "https://takeuforward.org/graph/advanced-graph-algorithms/", LeetCode: "https://leetcode.com/tag/shortest-path/", GFG: "https://www.geeksforgeeks.org/advanced-graph-algorithms/" }, status: "not-started" },
+    id: "recursion",
+    title: "Recursion & Backtracking",
+    level: "Core",
+    desc: "Base/recursive cases, state, pruning, order of choices.",
+    accent: "from-amber-500 to-orange-500",
+    subs: [
+      { id: "r1", text: "Subset/Permutation generation", link: "#", done: false },
+      { id: "r2", text: "N-Queens / Sudoku (choose one)", link: "#", done: false },
+      { id: "r3", text: "Combination Sum patterns", link: "#", done: false },
+      { id: "r4", text: "Backtracking with constraints", link: "#", done: false },
     ],
-    startDate: "",
-    endDate: "",
+  },
+  {
+    id: "binary-search",
+    title: "Binary Search",
+    level: "Core",
+    desc: "On arrays & on answers (min x such that …).",
+    accent: "from-emerald-500 to-teal-500",
+    subs: [
+      { id: "b1", text: "Classic lower/upper bound", link: "#", done: false },
+      { id: "b2", text: "Search in rotated sorted array", link: "#", done: false },
+      { id: "b3", text: "Binary search on answer (capacity, time)", link: "#", done: false },
+      { id: "b4", text: "Peak / bitonic / valleys", link: "#", done: false },
+    ],
+  },
+  {
+    id: "linked-list",
+    title: "Linked List",
+    level: "Core",
+    desc: "Two pointers, reversing, merge, cycle detection.",
+    accent: "from-blue-500 to-indigo-500",
+    subs: [
+      { id: "l1", text: "Reverse LL (iterative/recursive)", link: "#", done: false },
+      { id: "l2", text: "Middle / kth from end (fast/slow)", link: "#", done: false },
+      { id: "l3", text: "Cycle detect + entry (Floyd)", link: "#", done: false },
+      { id: "l4", text: "Merge two & merge k lists", link: "#", done: false },
+    ],
+  },
+  {
+    id: "stack-queue",
+    title: "Stack & Queue",
+    level: "Core",
+    desc: "Monotonic stack, deque, parentheses, LRU basics.",
+    accent: "from-rose-500 to-pink-500",
+    subs: [
+      { id: "sq1", text: "Valid parentheses / next greater", link: "#", done: false },
+      { id: "sq2", text: "Monotonic stack (histogram)", link: "#", done: false },
+      { id: "sq3", text: "Sliding window max (deque)", link: "#", done: false },
+      { id: "sq4", text: "LRU cache idea", link: "#", done: false },
+    ],
+  },
+  {
+    id: "trees",
+    title: "Binary Trees",
+    level: "Core → Advanced",
+    desc: "Traversals, DFS/BFS, LCA, diameter, DP on trees.",
+    accent: "from-lime-500 to-green-600",
+    subs: [
+      { id: "t1", text: "Traversals (pre/in/post, level)", link: "#", done: false },
+      { id: "t2", text: "Tree views / boundary", link: "#", done: false },
+      { id: "t3", text: "LCA / diameter", link: "#", done: false },
+      { id: "t4", text: "BST ops & properties", link: "#", done: false },
+    ],
+  },
+  {
+    id: "graphs",
+    title: "Graphs",
+    level: "Advanced",
+    desc: "Adjacency, BFS/DFS, shortest paths, MST, topo sort.",
+    accent: "from-cyan-500 to-sky-600",
+    subs: [
+      { id: "g1", text: "BFS/DFS (grid & general)", link: "#", done: false },
+      { id: "g2", text: "Topo sort / cycle detect (DAG)", link: "#", done: false },
+      { id: "g3", text: "Dijkstra / 0-1 BFS", link: "#", done: false },
+      { id: "g4", text: "MST (Kruskal/Prim)", link: "#", done: false },
+    ],
+  },
+  {
+    id: "dp",
+    title: "Dynamic Programming",
+    level: "Advanced",
+    desc: "1D/2D DP, knapsack, LIS, grid DP, optimization.",
+    accent: "from-purple-500 to-fuchsia-600",
+    subs: [
+      { id: "d1", text: "1D DP patterns (climb stairs)", link: "#", done: false },
+      { id: "d2", text: "0/1 knapsack / subset sum", link: "#", done: false },
+      { id: "d3", text: "LIS / patience intuition", link: "#", done: false },
+      { id: "d4", text: "Grid DP (paths/coins)", link: "#", done: false },
+    ],
   },
 ];
 
-// DSA Roadmap component that displays the structured learning path.
-function DSARoadmap() {
-  const [stages, setStages] = useState(initialStages);
-  const [open, setOpen] = useState(null);
-  const [notes, setNotes] = useState({});
-  const [showModal, setShowModal] = useState(false);
+const STORAGE_KEY = "dsa-roadmap-v2-dark";
 
-  // Load progress and notes from local storage on component mount
-  useEffect(() => {
-    console.log("Attempting to load data from local storage...");
+// ---------- Hooks ----------
+function usePersistedTopics() {
+  const [topics, setTopics] = useState(() => {
     try {
-      const savedStages = localStorage.getItem('dsa-roadmap-progress');
-      const savedNotes = localStorage.getItem('dsa-roadmap-notes');
-
-      if (savedStages) {
-        setStages(JSON.parse(savedStages));
-        console.log("Successfully loaded stages from local storage.");
-      }
-      if (savedNotes) {
-        setNotes(JSON.parse(savedNotes));
-        console.log("Successfully loaded notes from local storage.");
-      }
-      if (!savedStages && !savedNotes) {
-        console.log("No data found in local storage. Using initial state.");
-      }
-    } catch (e) {
-      console.error("Failed to load progress from local storage:", e);
-      // Clear invalid data and reset to initial state
-      localStorage.removeItem('dsa-roadmap-progress');
-      localStorage.removeItem('dsa-roadmap-notes');
-      setStages(initialStages);
-      setNotes({});
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : INITIAL_TOPICS;
+    } catch {
+      return INITIAL_TOPICS;
     }
-  }, []);
-
-  // Save progress and notes to local storage whenever they change
+  });
   useEffect(() => {
-    console.log("Saving data to local storage...");
-    try {
-      localStorage.setItem('dsa-roadmap-progress', JSON.stringify(stages));
-      localStorage.setItem('dsa-roadmap-notes', JSON.stringify(notes));
-    } catch (e) {
-      console.error("Failed to save progress to local storage:", e);
-    }
-  }, [stages, notes]);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(topics)); } catch {}
+  }, [topics]);
+  return [topics, setTopics];
+}
 
-  const getTotalProgress = () => {
-    const allTopics = stages.flatMap(s => s.topics);
-    if (allTopics.length === 0) return 0;
-    const completed = allTopics.filter(t => t.status === 'completed').length;
-    return Math.round((completed / allTopics.length) * 100);
-  };
+// ---------- Utilities ----------
+const calcOverall = (topics) => {
+  const all = topics.flatMap(t => t.subs);
+  if (!all.length) return 0;
+  const done = all.filter(s => s.done).length;
+  return Math.round((done / all.length) * 100);
+};
 
-  const getTotalEstimatedDays = () => {
-    return stages.reduce((total, stage) =>
-      total + stage.topics.reduce((stageTotal, topic) => stageTotal + topic.estimatedDays, 0), 0
-    );
-  };
+const calcTopic = (subs) => {
+  if (!subs?.length) return 0;
+  const d = subs.filter(s => s.done).length;
+  return Math.round((d / subs.length) * 100);
+};
 
-  const getStageStatus = (topics) => {
-    const total = topics.length;
-    const done = topics.filter((t) => t.status === "completed").length;
-    if (done === total) return "completed";
-    if (done > 0) return "in-progress";
-    return "not-started";
-  };
-
-  const updateTopicStatus = (si, ti, newStatus) => {
-    const copy = JSON.parse(JSON.stringify(stages));
-    copy[si].topics[ti].status = newStatus;
-    setStages(copy);
-  };
-
-  const updateDate = (si, field, value) => {
-    const copy = JSON.parse(JSON.stringify(stages));
-    copy[si][field] = value;
-    setStages(copy);
-  };
-
-  const updateNotes = (stageIndex, topicIndex, noteText) => {
-    const key = `${stageIndex}-${topicIndex}`;
-    setNotes(prev => ({
-      ...prev,
-      [key]: noteText
-    }));
-  };
-  
-  const handleClearAll = () => {
-    setShowModal(true);
-  };
-
-  const confirmClearAll = () => {
-    localStorage.removeItem('dsa-roadmap-progress');
-    localStorage.removeItem('dsa-roadmap-notes');
-    setStages(initialStages);
-    setNotes({});
-    setShowModal(false);
-    console.log("All progress and notes have been cleared.");
-  };
-
-  const StatusBadge = ({ status }) => {
-    let colorClass, text;
-    switch (status) {
-      case "not-started":
-        colorClass = "bg-rose-500/10 text-rose-400 border border-rose-500/30";
-        text = "Not Started";
-        break;
-      case "in-progress":
-        colorClass = "bg-amber-500/10 text-amber-400 border border-amber-500/30";
-        text = "In Progress";
-        break;
-      case "completed":
-        colorClass = "bg-green-500/10 text-green-400 border border-green-500/30";
-        text = "Completed";
-        break;
-      default:
-        colorClass = "bg-gray-500/10 text-gray-400 border border-gray-500/30";
-        text = "Unknown";
-    }
-    return (
-      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${colorClass}`}>
-        {text}
-      </span>
-    );
-  };
-
-  const ProgressCircle = ({ progress }) => {
-    const radius = 50;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (progress / 100) * circumference;
-  
-    return (
-      <div className="relative w-32 h-32 flex items-center justify-center">
-        <svg className="w-full h-full transform -rotate-90">
-          <circle
-            className="text-gray-700"
-            strokeWidth="10"
-            stroke="currentColor"
-            fill="transparent"
-            r={radius}
-            cx="64"
-            cy="64"
-          />
-          <circle
-            className="text-cyan-500"
-            strokeWidth="10"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            stroke="currentColor"
-            fill="transparent"
-            r={radius}
-            cx="64"
-            cy="64"
-            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
-          />
-        </svg>
-        <div className="absolute text-white text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-indigo-500">
-          {progress}%
-        </div>
-      </div>
-    );
-  };
-  
-  const OverallProgress = () => {
-    const totalProgress = getTotalProgress();
-    const totalDays = getTotalEstimatedDays();
-    const completedTopics = stages.flatMap(s => s.topics).filter(t => t.status === 'completed').length;
-    const totalTopics = stages.flatMap(s => s.topics).length;
-
-    return (
-      <div className="bg-slate-800/60 rounded-2xl p-6 md:p-8 text-white mb-8 shadow-2xl border border-slate-700/50 backdrop-blur-lg">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="md:w-1/2 text-center md:text-left mb-6 md:mb-0">
-            <h2 className="text-2xl md:text-3xl font-bold mb-1 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.4)' }}>Your Learning Journey</h2>
-            <p className="text-sm md:text-base text-gray-400 opacity-90">
-              {completedTopics}/{totalTopics} topics completed • ~{totalDays} days estimated
-            </p>
-          </div>
-          <div className="md:w-1/2 flex justify-center md:justify-end">
-            <ProgressCircle progress={totalProgress} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
+function highlight(text, q) {
+  if (!q) return text;
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return text;
   return (
-    <div className="min-h-screen bg-[#070914] text-gray-100 p-4 md:p-8 font-sans">
-      <div className="max-w-4xl mx-auto">
-        <h1 
-          className="text-3xl md:text-4xl font-extrabold text-center bg-gradient-to-r from-pink-400 to-blue-500 bg-clip-text text-transparent mb-8"
-          style={{ textShadow: '2px 2px 8px rgba(128, 0, 128, 0.4)' }}
-        >
-            DSA Roadmap
-        </h1>
+    <>
+      {text.slice(0, idx)}
+      <span className="text-cyan-300">{text.slice(idx, idx + q.length)}</span>
+      {text.slice(idx + q.length)}
+    </>
+  );
+}
 
-        <OverallProgress />
-
-        <div className="space-y-6">
-          {stages.map((stage, si) => {
-            const done = stage.topics.filter((t) => t.status === "completed").length;
-            const progress = Math.round((done / stage.topics.length) * 100);
-            const status = getStageStatus(stage.topics);
-            
-            return (
-              <div
-                key={si}
-                className="bg-slate-800/60 rounded-2xl shadow-lg border border-slate-700/50 overflow-hidden transition-transform duration-300 ease-in-out hover:scale-[1.01] backdrop-blur-lg"
-              >
-                <div 
-                  className="p-6 cursor-pointer flex items-center justify-between hover:bg-slate-700/50 transition-colors duration-200"
-                  onClick={() => setOpen(open === si ? null : si)}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 flex items-center justify-center bg-slate-700/50 rounded-full text-lg font-bold text-cyan-400 border border-slate-600">
-                      {si + 1}
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-gray-200">{stage.title}</h2>
-                      <div className="mt-1 flex items-center gap-2">
-                        <span className="text-sm text-gray-400">{progress}% Progress</span>
-                        <StatusBadge status={status} />
-                      </div>
-                    </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-200 transition-transform duration-300 transform">
-                    {open === si ? <FaChevronUp className="rotate-180" /> : <FaChevronDown />}
-                  </button>
-                </div>
-
-                {open === si && (
-                  <div className="p-6 border-t border-slate-700 bg-slate-900/40">
-                    <div className="mb-6">
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-4">
-                            <label className="text-sm font-medium text-gray-400">
-                                Start Date:
-                                <input
-                                    type="date"
-                                    value={stage.startDate || ""}
-                                    onChange={(e) => updateDate(si, "startDate", e.target.value)}
-                                    className="ml-2 bg-slate-800/60 text-gray-100 rounded-lg px-3 py-2 text-sm border border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                            </label>
-                            <label className="text-sm font-medium text-gray-400">
-                                End Date:
-                                <input
-                                    type="date"
-                                    value={stage.endDate || ""}
-                                    onChange={(e) => updateDate(si, "endDate", e.target.value)}
-                                    className="ml-2 bg-slate-800/60 text-gray-100 rounded-lg px-3 py-2 text-sm border border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                            </label>
-                        </div>
-                        <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                            <div
-                                className="h-full rounded-full transition-all duration-300 ease-out"
-                                style={{
-                                    width: `${progress}%`,
-                                    background: progress === 100
-                                        ? "linear-gradient(to right, #10b981, #34d399)" // Green for 100%
-                                        : progress > 0
-                                        ? "linear-gradient(to right, #f59e0b, #fbbf24)" // Amber for in progress
-                                        : "linear-gradient(to right, #ef4444, #f87171)" // Red for not started
-                                }}
-                            />
-                        </div>
-                    </div>
-
-                    <ul className="space-y-4">
-                      {stage.topics.map((topic, ti) => (
-                        <li key={ti} className="p-4 bg-slate-800/60 rounded-lg border border-slate-700/50 hover:bg-slate-700/50 transition-colors shadow-inner backdrop-blur-lg">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <div className="flex items-center gap-3">
-                                <span className="text-lg font-semibold text-gray-200">{topic.name}</span>
-                                <span className="text-xs text-gray-400 bg-slate-700/50 px-2 py-1 rounded-full">~{topic.estimatedDays} days</span>
-                              </div>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {Object.entries(topic.resources).map(([label, url]) => (
-                                  <a
-                                    key={label}
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs font-medium text-cyan-300 hover:text-cyan-200 transition-colors"
-                                  >
-                                    {label}
-                                  </a>
-                                ))}
-                              </div>
-                            </div>
-                            <div className="flex-shrink-0">
-                                {topic.status === "completed" && <FaCheckCircle className="text-green-500 text-2xl" />}
-                                {topic.status === "in-progress" && <FaSpinner className="text-amber-500 text-2xl animate-spin" />}
-                                {topic.status === "not-started" && <FaBookOpen className="text-blue-500 text-2xl" />}
-                            </div>
-                          </div>
-
-                          <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-400 mb-1">
-                                Your Notes
-                            </label>
-                            <textarea
-                                placeholder="Add your notes here..."
-                                value={notes[`${si}-${ti}`] || ''}
-                                onChange={(e) => updateNotes(si, ti, e.target.value)}
-                                className="w-full min-h-[60px] p-3 text-sm rounded-lg bg-slate-800/60 border border-slate-700 text-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                          </div>
-
-                          <div className="mt-4 flex items-center justify-between">
-                            <select
-                                value={topic.status}
-                                onChange={(e) => updateTopicStatus(si, ti, e.target.value)}
-                                className="bg-slate-800/60 text-gray-200 text-sm py-2 px-3 rounded-lg border border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            >
-                                <option value="not-started">Not Started</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                            <span className="text-xs text-gray-500 uppercase">{topic.status.replace("-", " ")}</span>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-6 flex flex-wrap justify-end gap-3">
-                        <button
-                            onClick={() => {
-                                const copy = JSON.parse(JSON.stringify(stages));
-                                copy[si].topics = copy[si].topics.map((t) => ({ ...t, status: "completed" }));
-                                setStages(copy);
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition"
-                        >
-                            Mark All Done
-                        </button>
-                        <button
-                            onClick={() => {
-                                const copy = JSON.parse(JSON.stringify(stages));
-                                copy[si].topics = copy[si].topics.map((t) => ({ ...t, status: "not-started" }));
-                                setStages(copy);
-                            }}
-                            className="px-4 py-2 text-sm font-medium text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition"
-                        >
-                            Reset
-                        </button>
-                        <button
-                            onClick={handleClearAll}
-                            className="px-4 py-2 text-sm font-medium text-red-400 border border-red-400 rounded-lg hover:bg-red-900/20 transition"
-                        >
-                            Clear All
-                        </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {showModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50">
-            <div className="bg-slate-800/60 border border-slate-700 rounded-2xl p-6 shadow-2xl w-full max-w-sm text-center backdrop-blur-lg">
-              <div className="flex justify-end">
-                <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-300">
-                    <FaTimes />
-                </button>
-              </div>
-              <h3 className="text-lg font-bold bg-gradient-to-r from-red-400 to-pink-500 bg-clip-text text-transparent mb-2" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.4)' }}>Are you sure?</h3>
-              <p className="text-sm text-gray-400 mb-6">
-                This will clear all of your progress and notes. This action cannot be undone.
-              </p>
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-300 border border-gray-600 rounded-lg hover:bg-gray-700 transition"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={confirmClearAll}
-                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
-                >
-                  Clear All
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <footer className="text-gray-500 text-center mt-12 text-sm">
-            <p className="mb-1">Your progress is automatically saved locally in your browser.</p>
-            <p>© 2025 CodeX by Aditya | All rights reserved</p>
-        </footer>
+// ---------- Small UI ----------
+function Bar({ value }) {
+  return (
+    <div className="w-full">
+      <div className="h-2 bg-[#161b22] rounded-full overflow-hidden">
+        <div className="h-full bg-gradient-to-r from-fuchsia-500 via-cyan-400 to-violet-500 transition-all" style={{ width: `${value}%` }} />
       </div>
+      <div className="text-[11px] mt-1 text-gray-400">{value}%</div>
     </div>
   );
 }
 
-// The App component is now simplified to directly render the main content.
-export default function App() {
-    return (
-        <div>
-            <CodexDSALanding />
-            <DSARoadmap />
+// ---------- Main Component ----------
+export default function DSARoadmapDark() {
+  const [topics, setTopics] = usePersistedTopics();
+  const [expanded, setExpanded] = useState(() => new Set(topics.map(t => t.id)));
+  const [query, setQuery] = useState("");
+
+  const overall = useMemo(() => calcOverall(topics), [topics]);
+
+  const toggleSub = (tid, sid) => {
+    setTopics(prev => prev.map(t =>
+      t.id === tid ? { ...t, subs: t.subs.map(s => s.id === sid ? { ...s, done: !s.done } : s) } : t
+    ));
+  };
+
+  const toggleExpanded = (tid) => {
+    setExpanded(prev => {
+      const n = new Set(prev);
+      n.has(tid) ? n.delete(tid) : n.add(tid);
+      return n;
+    });
+  };
+
+  const setAllInTopic = (tid, value) => {
+    setTopics(prev => prev.map(t =>
+      t.id === tid ? { ...t, subs: t.subs.map(s => ({ ...s, done: value })) } : t
+    ));
+  };
+
+  const resetAll = () => setTopics(INITIAL_TOPICS);
+
+  const exportJSON = () => {
+    const data = topics.map(t => ({
+      id: t.id,
+      title: t.title,
+      progress: calcTopic(t.subs),
+      completed: t.subs.filter(s => s.done).map(s => s.text),
+      remaining: t.subs.filter(s => !s.done).map(s => s.text),
+    }));
+    const blob = new Blob([JSON.stringify({ overall, topics: data }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dsa-progress.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Filter by query: a topic is shown if any sub matches or query empty
+  const filteredTopics = useMemo(() => {
+    if (!query.trim()) return topics;
+    const q = query.trim().toLowerCase();
+    return topics
+      .map(t => ({
+        ...t,
+        subs: t.subs.filter(s => s.text.toLowerCase().includes(q))
+      }))
+      .filter(t => t.subs.length > 0);
+  }, [topics, query]);
+
+  return (
+    <div className="min-h-screen bg-[#0d1117] mt- 8 text-gray-200">
+      {/* Top Bar */}
+      <div className="sticky top-0 z-30 border-b border-white/5 bg-[#0d1117]/80 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
+          <h1 className="text-lg md:text-2xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 via-fuchsia-400 to-violet-400 bg-clip-text text-transparent">
+            DSA Roadmap
+          </h1>
+          <div className="hidden md:flex items-center gap-3 ml-auto w-[320px]">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search subtopics…"
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#0b1220]/70 border border-white/10 outline-none focus:ring-2 ring-cyan-500/40 text-sm"
+              />
+            </div>
+            <button
+              onClick={exportJSON}
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm"
+              title="Export progress as JSON"
+            >
+              <Download className="w-4 h-4" /> Export
+            </button>
+            <button
+              onClick={resetAll}
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-white/10 bg-white/5 hover:bg-white/10 transition text-sm"
+              title="Reset all progress"
+            >
+              Reset
+            </button> 
+          </div>
         </div>
-    );
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-8 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6">
+        {/* Sidebar */}
+        <aside className="md:sticky md:top-16 h-max rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+          <div className="text-xs uppercase tracking-wider text-gray-400 px-2 mb-2">Topics</div>
+          <nav className="space-y-1">
+            {topics.map(t => (
+              <a key={t.id} href={`#${t.id}`} className="group flex items-center justify-between gap-2 px-3 py-2 rounded-xl hover:bg-white/[0.06] transition">
+                <span className="truncate text-sm">{t.title}</span>
+                <span className="text-[10px] text-gray-400 group-hover:text-cyan-300">{calcTopic(t.subs)}%</span>
+              </a>
+            ))}
+          </nav>
+        </aside>
+
+        {/* Main Timeline */}
+        <main>
+          {/* Overall */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 mb-6">
+            <div className="text-xs text-gray-400 mb-1">Overall Progress</div>
+            <Bar value={overall} />
+          </div>
+
+          <div className="relative pl-6 md:pl-10">
+            {/* vertical line */}
+            <div className="absolute left-3 md:left-5 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+
+            {filteredTopics.map((t, idx) => (
+              <motion.section
+                id={t.id}
+                key={t.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: idx * 0.05 }}
+                className="relative mb-6 scroll-mt-24"
+              >
+                {/* Node */}
+                <div className="absolute -left-1 md:-left-0.5 mt-2">
+                  <div className={`w-5 h-5 rounded-full bg-gradient-to-r ${t.accent} shadow ring-4 ring-[#0d1117]`} />
+                </div>
+
+                {/* Card */}
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur p-4 md:p-5 shadow hover:shadow-[0_0_0_2px_rgba(56,189,248,0.25)] transition">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+                        <span className="bg-gradient-to-r from-cyan-300 to-fuchsia-300 bg-clip-text text-transparent">{t.title}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-gray-300">{t.level}</span>
+                      </h2>
+                      <p className="text-sm text-gray-400 mt-1">{t.desc}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setAllInTopic(t.id, true)}
+                        className="text-xs px-2 py-1 rounded-lg border border-white/10 hover:bg-white/10"
+                      >
+                        Mark all
+                      </button>
+                      <button
+                        onClick={() => setAllInTopic(t.id, false)}
+                        className="text-xs px-2 py-1 rounded-lg border border-white/10 hover:bg-white/10"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        onClick={() => toggleExpanded(t.id)}
+                        className="shrink-0 inline-flex items-center gap-1 rounded-lg border border-white/10 px-2.5 py-1.5 text-sm hover:bg-white/10"
+                      >
+                        <ChevronDown className={`w-4 h-4 transition ${expanded.has(t.id) ? 'rotate-180' : ''}`} />
+                        {expanded.has(t.id) ? 'Collapse' : 'Expand'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* per-topic progress */}
+                  <div className="mt-3">
+                    <Bar value={calcTopic(t.subs)} />
+                  </div>
+
+                  <AnimatePresence initial={false}>
+                    {expanded.has(t.id) && (
+                      <motion.div
+                        key="content"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="mt-4"
+                      >
+                        <ul className="space-y-2">
+                          {t.subs.map(s => (
+                            <li key={s.id} className="flex items-center gap-2">
+                              <button
+                                onClick={() => toggleSub(t.id, s.id)}
+                                className="inline-flex items-center justify-center w-5 h-5 rounded-md border border-white/15 hover:bg-white/10"
+                                aria-label={s.done ? 'Mark incomplete' : 'Mark complete'}
+                              >
+                                {s.done ? (
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                ) : (
+                                  <Circle className="w-4 h-4 text-gray-500" />
+                                )}
+                              </button>
+                              <a
+                                href={s.link || '#'}
+                                target="_blank"
+                                rel="noreferrer"
+                                className={`text-sm hover:text-cyan-300 transition ${s.done ? 'line-through text-gray-500' : 'text-gray-200'}`}
+                              >
+                                {highlight(s.text, query)}
+                              </a>
+                              <ChevronRight className="w-3.5 h-3.5 text-gray-500" />
+                            </li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.section>
+            ))}
+
+            {/* Capstone */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="absolute -left-1 md:-left-0.5 mt-2">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-r from-yellow-400 to-amber-600 shadow ring-4 ring-[#0d1117]" />
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur p-5 shadow">
+                <div className="flex items-center gap-2 text-lg md:text-xl font-semibold">
+                  <Trophy className="w-5 h-5 text-amber-400" />
+                  Capstone: Interview Readiness
+                </div>
+                <p className="text-sm text-gray-300 mt-1">Timed practice, mixed-topic sets, and mock interviews.</p>
+                <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm">
+                  <span className="rounded-xl border border-white/10 p-3">150+ DSA patterns revision sheet</span>
+                  <span className="rounded-xl border border-white/10 p-3">Weekly mock contests</span>
+                  <span className="rounded-xl border border-white/10 p-3">System design primer (basics)</span>
+                  <span className="rounded-xl border border-white/10 p-3">Curated past interview questions</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </main>
+      </div>
+
+      {/* Mobile controls (bottom) */}
+      <div className="md:hidden fixed bottom-3 inset-x-3 z-30 flex gap-3">
+        <div className="flex-1 relative">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search subtopics…"
+            className="w-full pl-9 pr-3 py-3 rounded-2xl bg-[#0b1220]/80 border border-white/10 outline-none focus:ring-2 ring-cyan-500/40 text-sm"
+          />
+        </div>
+        <button onClick={exportJSON} className="rounded-2xl px-4 py-3 border border-white/10 bg-white/5 text-sm">Export</button>
+      </div>
+    </div>
+  );
 }

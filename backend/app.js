@@ -80,12 +80,57 @@ app.get('/dashboard', authenticateToken, async (req, res) => {
   try {
     const problems = await Problem.find({ userId });
     const { total, solved, progress } = calculateProgress(problems);
-    res.json({ message: 'Dashboard data retrieved successfully', problems, total, solved, progress });
+    const dailyStreak = calculateDailyStreak(problems);
+    res.json({ message: 'Dashboard data retrieved successfully', problems, total, solved, progress , dailyStreak });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }   
 
 })
+const calculateDailyStreak = (snippets) => {
+  if (!snippets || snippets.length === 0) return 0;
+
+  // Sort snippets by createdAt date
+  const sorted = [...snippets].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
+
+  const today = new Date();
+  let streak = 0;
+
+  // Convert to just dates (ignore time)
+  const normalize = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+  let prevDate = normalize(today);
+
+  // Go backwards from today
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    const snippetDate = normalize(new Date(sorted[i].createdAt));
+    const diffDays = Math.round(
+      (prevDate - snippetDate) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays === 0) {
+      // Snippet today → continue streak
+      continue;
+    } else if (diffDays === 1) {
+      // Yesterday → streak++
+      streak++;
+      prevDate = snippetDate;
+    } else {
+      // Gap → break streak
+      break;
+    }
+  }
+
+  // Add 1 if user has a snippet today
+  const lastSnippetDate = normalize(new Date(sorted[sorted.length - 1].createdAt));
+  if (lastSnippetDate.getTime() === normalize(today).getTime()) {
+    streak++;
+  }
+
+  return streak;
+};
 
 app.post('/run', async (req, res) => {
   const { code } = req.body;

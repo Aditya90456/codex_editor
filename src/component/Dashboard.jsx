@@ -13,18 +13,29 @@ const langIcons = {
   default: <FaCode className="text-gray-400 text-2xl" />
 };
 
+// 🔥 Calculate streak from snippets
+const calculateDailyStreak = (snippets) => {
+  const snippet=JSON.parse(localStorage.getItem('codex_snippets') || '[]');
+  if (snippet.length === 0) return { current: 0, longest: 0 };  
+  const today = new Date();
+  const streaks = snippet.map(s => new Date(s.date).toDateString() === today.toDateString());
+  const currentStreak = streaks.reduce((acc, curr) => curr ? acc + 1 : 0, 0);                           
+  const longestStreak = Math.max(...streaks.map((s, i) => s ? streaks.slice(i).reduce((a, b) => b ? a + 1 : 0, 0) : 0));
+  return { current: currentStreak, longest: longestStreak };
+};
+
 function Dashboard() {
   const [data, setData] = useState([]);
   const [snippets, setSnippets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [dailyStreak, setDailyStreak] = useState({ current: 0, longest: 0 });
   const [user, setUser] = useState({
     username: 'Guest',
     email: '',
     joined: '',
-    streak: 0,
   });
 
-  // Fetch user info & progress from backend
+  // Fetch user info & progress
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,7 +46,6 @@ function Dashboard() {
           username: userRes.data.username || 'Guest',
           email: userRes.data.email || 'Not Provided',
           joined: userRes.data.joined || 'Unknown',
-          streak: userRes.data.streak || 0,
         });
 
         const progressRes = await axios.get('http://localhost:5000/dashboard', {
@@ -52,13 +62,17 @@ function Dashboard() {
     fetchData();
   }, []);
 
-  // Load saved snippets from localStorage
+  // Load saved snippets + streak calculation
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('codex_snippets') || '[]');
     setSnippets(saved);
+
+    if (saved.length > 0) {
+      setDailyStreak(calculateDailyStreak(saved));
+    }
   }, []);
 
-  // 📥 Download all snippets as ZIP
+  // 📥 Download all snippets
   const downloadAllSnippets = async () => {
     if (snippets.length === 0) {
       alert('No saved snippets to download!');
@@ -66,7 +80,10 @@ function Dashboard() {
     }
     const zip = new JSZip();
     snippets.forEach((snippet, idx) => {
-      const ext = snippet.lang === 'python' ? '.py' : snippet.lang === 'javascript' ? '.js' : '.txt';
+      const ext =
+        snippet.lang === 'python' ? '.py' :
+        snippet.lang === 'javascript' ? '.js' :
+        snippet.lang === 'cpp' ? '.cpp' : '.txt';
       zip.file(`${snippet.filename || `snippet${idx + 1}`}${ext}`, snippet.code);
     });
     const content = await zip.generateAsync({ type: 'blob' });
@@ -75,7 +92,10 @@ function Dashboard() {
 
   // 📥 Download single snippet
   const downloadSnippet = (snippet) => {
-    const ext = snippet.lang === 'python' ? '.py' : snippet.lang === 'javascript' ? '.js' : '.txt';
+    const ext =
+      snippet.lang === 'python' ? '.py' :
+      snippet.lang === 'javascript' ? '.js' :
+      snippet.lang === 'cpp' ? '.cpp' : '.txt';
     const blob = new Blob([snippet.code], { type: 'text/plain;charset=utf-8' });
     saveAs(blob, `${snippet.filename || 'snippet'}${ext}`);
   };
@@ -86,10 +106,14 @@ function Dashboard() {
     updated.splice(index, 1);
     setSnippets(updated);
     localStorage.setItem('codex_snippets', JSON.stringify(updated));
+
+    // Recalculate streak after deletion
+    setDailyStreak(calculateDailyStreak(updated));
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-tr from-[#0f2027] via-[#203a43] to-[#2c5364] text-white">
+      
       {/* Profile Card */}
       <motion.div
         initial={{ opacity: 0, y: -30 }}
@@ -109,7 +133,18 @@ function Dashboard() {
             </h1>
             <p className="text-lg text-gray-100">📧 {user.email}</p>
             <p className="text-md text-gray-200 mt-1">📅 Joined: {user.joined}</p>
-            <p className="text-md text-green-300 mt-1">🔥 Streak: {user.streak} days</p>
+
+            {/* 🔥 Daily Streak Badge */}
+            <div
+              className="mt-4 inline-flex flex-col sm:flex-row sm:items-center gap-2 bg-gradient-to-r from-orange-500 to-red-600 text-white font-semibold px-4 py-2 rounded-full shadow-lg hover:scale-105 transform transition"
+              title={`Your longest streak is ${dailyStreak.longest} days`}
+            >
+              <span className="text-2xl animate-pulse">🔥</span>
+              <span className="text-lg">Current Streak:</span>
+              <span className="bg-white text-orange-600 font-bold px-3 py-1 rounded-full">{dailyStreak.current} days</span>
+              <span className="ml-4 text-lg">Longest:</span>
+              <span className="bg-white text-orange-600 font-bold px-3 py-1 rounded-full">{dailyStreak.longest} days</span>
+            </div>
           </div>
         </div>
 
@@ -174,4 +209,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default Dashboard; 
