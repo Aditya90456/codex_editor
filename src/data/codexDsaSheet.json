@@ -1,0 +1,192 @@
+{
+  "Arrays": [
+    {
+      "id": 1,
+      "title": "Find the Largest Element in an Array",
+      "link": "https://www.geeksforgeeks.org/c-program-find-largest-element-array/",
+      "difficulty": "Easy",
+      "tags": ["array", "basic"]
+    },
+    {
+      "id": 2,
+      "title": "Reverse an Array",
+      "link": "https://www.geeksforgeeks.org/write-a-program-to-reverse-an-array-or-string/",
+      "difficulty": "Easy",
+      "tags": ["array", "two-pointer"]
+    } 
+  ],
+  "Strings": [
+    {
+      "id": 21,
+      "title": "Check Palindrome String",
+      "link": "https://leetcode.com/problems/valid-palindrome/",
+      "difficulty": "Easy",
+      "tags": ["string", "two-pointer"]
+    },
+    {
+      "id": 22,
+      "title": "Longest Common Prefix",
+      "link": "https://leetcode.com/problems/longest-common-prefix/",
+      "difficulty": "Easy",
+      "tags": ["string", "trie"]
+    } 
+  ],
+  "Linked List": [
+    {
+      "id": 41,
+      "title": "Reverse a Linked List",
+      "link": "https://leetcode.com/problems/reverse-linked-list/",
+      "difficulty": "Easy",
+      "tags": ["linked-list"]
+    },
+    {
+      "id": 42,
+      "title": "Detect Cycle in Linked List",
+      "link": "https://leetcode.com/problems/linked-list-cycle/",
+      "difficulty": "Medium",
+      "tags": ["linked-list", "two-pointer"]
+    } 
+  ],
+  "Stack & Queue": [
+    {
+      "id": 61,
+      "title": "Implement Stack using Arrays",
+      "link": "https://www.geeksforgeeks.org/stack-data-structure/",
+      "difficulty": "Easy",
+      "tags": ["stack"]
+    },
+    {
+      "id": 62,
+      "title": "Implement Queue using Stacks",
+      "link": "https://leetcode.com/problems/implement-queue-using-stacks/",
+      "difficulty": "Medium",
+      "tags": ["queue", "stack"]
+    } 
+  ],
+  "Recursion & Backtracking": [
+    {
+      "id": 81,
+      "title": "Subset Generation",
+      "link": "https://leetcode.com/problems/subsets/",
+      "difficulty": "Medium",
+      "tags": ["recursion", "backtracking"]
+    },
+    {
+      "id": 82,
+      "title": "N-Queens Problem",
+      "link": "https://leetcode.com/problems/n-queens/",
+      "difficulty": "Hard",
+      "tags": ["recursion", "backtracking"]
+    } 
+  ],
+  "Binary Search": [
+    {
+      "id": 101,
+      "title": "Binary Search",
+      "link": "https://leetcode.com/problems/binary-search/",
+      "difficulty": "Easy",
+      "tags": ["binary-search"]
+    },
+    {
+      "id": 102,
+      "title": "Search in Rotated Sorted Array",
+      "link": "https://leetcode.com/problems/search-in-rotated-sorted-array/",
+      "difficulty": "Medium",
+      "tags": ["binary-search"]
+    } 
+  ],
+  "Binary Tree": [
+    {
+      "id": 121,
+      "title": "Inorder Traversal",
+      "link": "https://leetcode.com/problems/binary-tree-inorder-traversal/",
+      "difficulty": "Easy",
+      "tags": ["tree", "dfs"]
+    },
+    {
+      "id": 122,
+      "title": "Maximum Depth of Binary Tree",
+      "link": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+      "difficulty": "Easy",
+      "tags": ["tree", "dfs"]
+    } 
+  ],
+  "BST": [
+    {
+      "id": 141,
+      "title": "Validate BST",
+      "link": "https://leetcode.com/problems/validate-binary-search-tree/",
+      "difficulty": "Medium",
+      "tags": ["bst"]
+    },
+    {
+      "id": 142,
+      "title": "Lowest Common Ancestor in BST",
+      "link": "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/",
+      "difficulty": "Medium",
+      "tags": ["bst"]
+    } 
+  ],
+  "Heap & Priority Queue": [
+    {
+      "id": 161,
+      "title": "Kth Largest Element in an Array",
+      "link": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+      "difficulty": "Medium",
+      "tags": ["heap", "priority-queue"]
+    },
+    {
+      "id": 162,
+      "title": "Merge K Sorted Lists",
+      "link": "https://leetcode.com/problems/merge-k-sorted-lists/",
+      "difficulty": "Hard",
+      "tags": ["heap", "linked-list"]
+    } 
+  ],
+  "Graph": [
+    {
+      "id": 181,
+      "title": "BFS Traversal",
+      "link": "https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/",
+      "difficulty": "Easy",
+      "tags": ["graph", "bfs"]
+    },
+    {
+      "id": 182,
+      "title": "DFS Traversal",
+      "link": "https://www.geeksforgeeks.org/depth-first-search-or-dfs-for-a-graph/",
+      "difficulty": "Easy",
+      "tags": ["graph", "dfs"]
+    },
+    {
+      "id": 183,
+      "title": "Dijkstra’s Algorithm",
+      "link": "https://leetcode.com/problems/network-delay-time/",
+      "difficulty": "Medium",
+      "tags": ["graph", "shortest-path", "dijkstra"]
+    } 
+  ],
+  "Dynamic Programming": [
+    {
+      "id": 201,
+      "title": "Fibonacci Number",
+      "link": "https://leetcode.com/problems/fibonacci-number/",
+      "difficulty": "Easy",
+      "tags": ["dp"]
+    },
+    {
+      "id": 202,
+      "title": "Longest Common Subsequence",
+      "link": "https://leetcode.com/problems/longest-common-subsequence/",
+      "difficulty": "Medium",
+      "tags": ["dp"]
+    },
+    {
+      "id": 203,
+      "title": "0/1 Knapsack Problem",
+      "link": "https://www.geeksforgeeks.org/0-1-knapsack-problem-dp-10/",
+      "difficulty": "Medium",
+      "tags": ["dp", "knapsack"]
+    } 
+  ]
+}
