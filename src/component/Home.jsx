@@ -130,21 +130,15 @@ export default function EditorsAndRoadmaps() {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-6xl font-extrabold tracking-tight"
-          >
-            Welcome back, <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">{user}</span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className={`mt-4 inline-flex items-center gap-2 px-4 py-1 rounded-full text-sm border ${theme === "dark" ? "bg-white/10 border-white/20" : "bg-black/5 border-black/10"}`}
-          >
-            <span>Premium Access</span> ✨
-          </motion.p>
+          <h1 className="text-5xl font-extrabold tracking-tight mb-4 bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            Welcome to Codex Playground
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+            Your one-stop solution for coding editors, roadmaps, and DSA practice.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
+            Hi <span className="font-semibold">{user}</span>, explore our editors and roadmaps to enhance your coding skills!
+          </p>
 
           {/* Search + Tabs */}
           <div className="mt-10 max-w-3xl mx-auto">
