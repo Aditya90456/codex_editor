@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Circle, ChevronDown, Clock, Sun, Moon, Search } from "lucide-react";
-import sheetData from "../data/codexdsasheet.json"; // your JSON sheet
+import sheetData from "../data/codexDsaSheet.json"; // your JSON sheet
 
 const STORAGE_KEY = "codex-sheet-status";
 const THEME_KEY = "codex-sheet-theme";
