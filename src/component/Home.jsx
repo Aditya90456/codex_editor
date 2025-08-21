@@ -251,6 +251,41 @@ export default function EditorsAndRoadmaps() {
           </Link>
         </motion.div>
       </section>
+            {/* MENTORSHIP SECTION */}
+      <section className="px-6 max-w-5xl mx-auto mb-20">
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          className={`p-8 rounded-3xl shadow-xl border flex flex-col md:flex-row items-center gap-6 text-center md:text-left
+            ${theme === "dark"
+              ? "bg-gradient-to-r from-indigo-600/80 to-purple-600/80 border-indigo-400/30"
+              : "bg-gradient-to-r from-indigo-300 to-purple-300 border-indigo-200"}`}
+        >
+          {/* Avatar / Image */}
+          <img
+            src="https://avatars.githubusercontent.com/u/90456?v=4" // replace with your actual photo
+            alt="Aditya Bakshi"
+            className="w-28 h-28 rounded-full border-4 border-white/30 shadow-lg object-cover"
+          />
+
+          {/* Content */}
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-white">👨‍🏫 My Mentorship</h2>
+            <p className="mt-2 text-white/90">
+              I guide students in DSA, Development, and Open Source.  
+              Book a mentorship call with me to accelerate your journey.
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
+              <Link
+                to="https://preplaced.in/profile/aditya-bakshi"
+                className="px-5 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
+              >
+                View Profile →
+              </Link> 
+            </div>
+          </div>
+        </motion.div>
+      </section>
 
       {/* FOOTER */}
       <footer className={`border-t ${theme === "dark" ? "border-white/10" : "border-black/10"} py-8 text-center text-sm`}>
