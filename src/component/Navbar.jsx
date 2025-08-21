@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../assets/cx.png";
 import axios from "axios";
-import { FiMenu, FiX } from "react-icons/fi";
+import { FiMenu, FiX, FiChevronDown } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 
 function Navbar() {
   const [username, setUsername] = useState("Guest");
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [editorDropdownOpen, setEditorDropdownOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -45,7 +46,7 @@ function Navbar() {
       : "relative hover:text-cyan-400 transition duration-300 after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-[2px] after:bg-gradient-to-r from-cyan-400 to-purple-500 after:rounded-full hover:after:w-full after:transition-all after:duration-300";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/60 backdrop-blur-lg shadow-lg border-b border-gray-700 px-6 py-3 flex justify-between items-center text-white text-[16px] font-semibold">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-gray-900/70 backdrop-blur-lg shadow-lg border-b border-gray-700 px-6 py-3 flex justify-between items-center text-white text-[16px] font-semibold">
       
       {/* Logo */}
       <div className="flex items-center gap-2">
@@ -58,10 +59,35 @@ function Navbar() {
       {/* Desktop Navigation */}
       <div className="hidden md:flex items-center gap-6">
         <Link to="/" className={navLinkStyle("/")}>Home</Link>
-        <Link to="/editor" className={navLinkStyle("/editor")}>Web Dev Editor</Link>
-        <Link to="/cpp" className={navLinkStyle("/cpp")}>C++ Editor</Link>
-        <Link to="/python" className={navLinkStyle("/python")}>Python Editor</Link>
-        <Link to="/js" className={navLinkStyle("/js")}>JS Editor</Link>
+
+        {/* Editors Dropdown */}
+        <div
+          className="relative"
+          onMouseEnter={() => setEditorDropdownOpen(true)}
+          onMouseLeave={() => setEditorDropdownOpen(false)}
+        >
+          <button className="flex items-center gap-1 hover:text-cyan-400 transition">
+            Editors <FiChevronDown size={16} />
+          </button>
+
+          <AnimatePresence>
+            {editorDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute top-8 left-0 bg-gray-800/95 backdrop-blur-md rounded-lg shadow-lg p-3 flex flex-col gap-2 w-44"
+              >
+                <Link to="/editor" className="hover:text-cyan-400 transition">Web Dev Editor</Link>
+                <Link to="/cpp" className="hover:text-cyan-400 transition">C++ Editor</Link>
+                <Link to="/python" className="hover:text-cyan-400 transition">Python Editor</Link>
+                <Link to="/js" className="hover:text-cyan-400 transition">JS Editor</Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         <Link to="/AI-Topic-Guide" className={navLinkStyle("/AI-Topic-Guide")}>DSA Guide</Link>
         <Link to="/mentorship" className={navLinkStyle("/mentorship")}>Mentorship AI</Link>
       </div>
@@ -108,10 +134,16 @@ function Navbar() {
             className="absolute top-16 left-0 w-full bg-gray-900/90 backdrop-blur-md shadow-md py-4 flex flex-col gap-4 px-6"
           >
             <Link to="/" onClick={toggleMobileMenu} className={navLinkStyle("/")}>Home</Link>
-            <Link to="/editor" onClick={toggleMobileMenu} className={navLinkStyle("/editor")}>Web Dev Editor</Link>
-            <Link to="/cpp" onClick={toggleMobileMenu} className={navLinkStyle("/cpp")}>C++ Editor</Link>
-            <Link to="/python" onClick={toggleMobileMenu} className={navLinkStyle("/python")}>Python Editor</Link>
-            <Link to="/js" onClick={toggleMobileMenu} className={navLinkStyle("/js")}>JS Editor</Link>
+
+            {/* Editors dropdown in mobile as nested links */}
+            <div className="flex flex-col gap-2 pl-2">
+              <span className="text-gray-400">Editors</span>
+              <Link to="/editor" onClick={toggleMobileMenu} className="hover:text-cyan-400">Web Dev</Link>
+              <Link to="/cpp" onClick={toggleMobileMenu} className="hover:text-cyan-400">C++</Link>
+              <Link to="/python" onClick={toggleMobileMenu} className="hover:text-cyan-400">Python</Link>
+              <Link to="/js" onClick={toggleMobileMenu} className="hover:text-cyan-400">JS</Link>
+            </div>
+
             <Link to="/AI-Topic-Guide" onClick={toggleMobileMenu} className={navLinkStyle("/AI-Topic-Guide")}>DSA Guide</Link>
             <Link to="/mentorship" onClick={toggleMobileMenu} className={navLinkStyle("/mentorship")}>Mentorship AI</Link>
 
