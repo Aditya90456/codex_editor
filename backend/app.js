@@ -737,15 +737,29 @@ async function callGeminiWithRetry(prompt, retries = 3, delay = 2000) {
 
 // 🛡️ API route: /ai
 app.post('/ai', authenticateToken, async (req, res) => {
-  const { prompt } = req.body;
+  const { prompt, agent } = req.body; // frontend sends "agent"
 
   if (!prompt || typeof prompt !== 'string') {
     return res.status(400).json({ message: '❗ Invalid or missing prompt.' });
   }
 
   try {
-    console.log(`📝 Prompt received: "${prompt}" from user ${req.user?.id}`);
-    const reply = await callGeminiWithRetry(prompt);
+    console.log(`📝 Prompt received: "${prompt}" from user ${req.user?.id}, agent: ${agent}`);
+
+    // 🧠 Define system prompts per agent
+    let systemPrompt = "You are a helpful mentor AI. Give clear, concise answers.";
+    if (agent === "dsa") {
+      systemPrompt = "You are a DSA mentor like Striver. Explain coding and algorithms with examples.";
+    } else if (agent === "career") {
+      systemPrompt = "You are a career coach. Guide on resume, interviews, and job strategy.";
+    } else if (agent === "system") {
+      systemPrompt = "You are a System Design mentor. Explain architectures, databases, scaling.";
+    } else if (agent === "general") {
+      systemPrompt = "You are a friendly mentor who can help with any question.";
+    }
+
+    // Call Gemini with system + user prompt
+    const reply = await callGeminiWithRetry(`${systemPrompt}\nUser: ${prompt}`);
 
     res.status(200).json({ reply });
   } catch (error) {
@@ -756,6 +770,7 @@ app.post('/ai', authenticateToken, async (req, res) => {
     });
   }
 });
+
 
 /**
  * 📦 Problems API
