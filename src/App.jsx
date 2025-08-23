@@ -25,7 +25,7 @@ import Java from './component/Java'
 import Start from './component/Start'
 import Playground from './component/Playground'
 import DeveloperRoadmap from './component/Development'
-import Codexsheet from './component/codexsheet'
+import Codexsheet from './component/Codexsheet'
 import MentorAi from './component/MentorAi'
 function App() {
   const router = createBrowserRouter([
