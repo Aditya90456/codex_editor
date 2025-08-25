@@ -284,7 +284,7 @@ export default function EditorsAndRoadmaps() {
     >
       <h3 className="text-xl font-semibold text-white">1 Month</h3>
       <p className="text-white/80 mt-2">Perfect for quick guidance</p>
-      <span className="text-2xl font-bold text-white mt-3">₹20,050</span>
+      <span className="text-2xl font-bold text-white mt-3">₹5,513</span>
       <Link
         to="https://preplaced.in/checkout/ltm/aditya-bakshi"
         className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
@@ -300,7 +300,7 @@ export default function EditorsAndRoadmaps() {
     >
       <h3 className="text-xl font-semibold text-white">3 Months</h3>
       <p className="text-white/80 mt-2">Deep dive mentorship</p>
-      <span className="text-2xl font-bold text-white mt-3">₹1,187</span>
+      <span className="text-2xl font-bold text-white mt-3">₹3,675</span>
       <Link
         to="https://preplaced.in/checkout/ltm/aditya-bakshi"
         className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
@@ -316,7 +316,7 @@ export default function EditorsAndRoadmaps() {
     >
       <h3 className="text-xl font-semibold text-white">6 Months</h3>
       <p className="text-white/80 mt-2">Long-term mentorship</p>
-      <span className="text-2xl font-bold text-white mt-3">₹3,675</span>
+      <span className="text-2xl font-bold text-white mt-3">₹1,353</span>
       <Link
         to="https://preplaced.in/checkout/ltm/aditya-bakshi"
         className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
