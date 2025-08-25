@@ -4,18 +4,18 @@ import { PlayCircle } from "lucide-react";
 
 const playlists = [
   {
-    title: "MERN Stack Full Course",
+    title: "Backend Development Full Playlist with Sheryians Coding School",
     thumbnail: "https://img.youtube.com/vi/T55Kb8rrH1g/hqdefault.jpg",
-    link: "https://youtu.be/T55Kb8rrH1g?si=bckr8R_nm3ErYxKj",
-    videos: "120 videos",
+    link: "https://youtube.com/playlist?list=PLbtI3_MArDOkXRLxdMt1NOMtCS-84ibHH&si=mYSd_glDFogBKjR8",
+    videos: "29 videos",
     channel: "Sheryians Coding School",
   },
    
   {
-    title: "DSA for Beginners",
+    title: "DSA for Beginners Full Playlist Love Babbar",
     thumbnail: "https://img.youtube.com/vi/WQoB2z67hvY/hqdefault.jpg",
-    link: "https://youtu.be/WQoB2z67hvY",
-    videos: "60 videos",
+    link: "https://youtube.com/playlist?list=PLDzeHZWIZsTryvtXdMr6rPh4IDexB5NIA&si=Z1VRlgWORzxJ0T-R",
+    videos: "149 videos",
     channel: "Love Babbar",
   },
 ];
