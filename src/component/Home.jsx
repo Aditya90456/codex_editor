@@ -317,6 +317,60 @@ export default function EditorsAndRoadmaps() {
             </div>
         </motion.div>
       </section>
+   <section className="px-6 max-w-5xl mx-auto mb-20">
+  <motion.div
+    whileHover={{ scale: 1.05 }}
+    transition={{ type: "spring", stiffness: 200 }}
+    className={`p-8 rounded-3xl shadow-2xl border overflow-hidden relative group
+      ${theme === "dark"
+        ? "bg-gradient-to-br from-emerald-700 via-cyan-700 to-teal-700 border-emerald-400/30"
+        : "bg-gradient-to-br from-emerald-200 via-cyan-200 to-teal-200 border-emerald-300"}`}
+  >
+    {/* Decorative Glow */}
+    <div className="absolute inset-0 opacity-30 group-hover:opacity-50 transition bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-white/40 via-transparent to-transparent"></div>
+
+    {/* Content */}
+  <div className="relative z-10">
+  <h2 className="text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+    🚀 Backend Tutorial & 📘 DSA Tutorial
+  </h2>
+
+  {/* Backend Section */}
+  <p className="mt-3 text-white/90 leading-relaxed text-lg">
+    Master <span className="font-semibold">Node.js, Express, MongoDB</span>, 
+    and backend system design with <span className="font-semibold">real-world projects</span> & step-by-step guidance.
+  </p>
+
+  {/* DSA Section */}
+  <p className="mt-4 text-white/90 leading-relaxed text-lg">
+    Practice <span className="font-semibold">DSA with Love Babbar Sheet</span> – 450 curated problems to crack interviews 
+    & build strong problem-solving skills.
+  </p>
+
+  {/* CTA Buttons */}
+  <div className="mt-6 flex flex-wrap gap-4">
+    <Link
+      to="/backendroadmap"
+      className="inline-flex items-center gap-2 px-6 py-3 rounded-full 
+      bg-white/20 backdrop-blur-md text-white font-medium hover:bg-white/30 
+      transition shadow-lg hover:shadow-xl"
+    >
+      Start Backend Roadmap →
+    </Link>
+    <Link
+      to="/backendroadmap"
+      className="inline-flex items-center gap-2 px-6 py-3 rounded-full 
+      bg-white/20 backdrop-blur-md text-white font-medium hover:bg-white/30 
+      transition shadow-lg hover:shadow-xl"
+    >
+      Start DSA (Love Babbar) →
+    </Link>
+  </div>
+</div>
+
+  </motion.div>
+</section>
+
       {/* FOOTER */}
       <footer className={`border-t ${theme === "dark" ? "border-white/10" : "border-black/10"} py-8 text-center text-sm`}>
         <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent font-semibold">

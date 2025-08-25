@@ -27,6 +27,7 @@ import Playground from './component/Playground'
 import DeveloperRoadmap from './component/Development'
 import Codexsheet from './component/Codexsheet'
 import MentorAi from './component/MentorAi'
+import Backendroadmap from './component/Backendroadmap'
 function App() {
   const router = createBrowserRouter([
     {
@@ -513,6 +514,28 @@ function App() {
             transition={{ duration: 0.5 }}
           >
             <MentorAi />
+          </motion.div>
+        </motion.div>
+      </>
+    )
+  },
+  {
+    path:'/backendroadmap',
+    element: (
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ x: -100, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Backendroadmap />
           </motion.div>
         </motion.div>
       </>

@@ -769,8 +769,7 @@ app.post('/ai', authenticateToken, async (req, res) => {
       error: error.message || 'Unknown error',
     });
   }
-});
-
+}); 
 
 /**
  * 📦 Problems API
