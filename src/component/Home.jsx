@@ -268,24 +268,67 @@ export default function EditorsAndRoadmaps() {
           />
 
           {/* Content */}
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-white">👨‍🏫 My Mentorship</h2>
-            <p className="mt-2 text-white/90">
-              I guide students in DSA, Development, and Open Source.  
-              Book a mentorship call with me to accelerate your journey.
-            </p>
+       <div className="flex-1">
+  <h2 className="text-2xl font-bold text-white">👨‍🏫 My Mentorship</h2>
+  <p className="mt-2 text-white/90">
+    I guide students in DSA, Development, and Open Source.  
+    Book a mentorship plan that suits your journey.
+  </p>
 
-            <div className="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
-              <Link
-                to="https://preplaced.in/profile/aditya-bakshi"
-                className="px-5 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
-              >
-                View Profile →
-              </Link> 
-            </div>
-          </div>
+  {/* Mentorship Plans */}
+  <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+    {/* 1 Month Plan */}
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="rounded-2xl bg-white/10 backdrop-blur p-5 shadow-lg border border-white/20 flex flex-col items-center text-center"
+    >
+      <h3 className="text-xl font-semibold text-white">1 Month</h3>
+      <p className="text-white/80 mt-2">Perfect for quick guidance</p>
+      <span className="text-2xl font-bold text-white mt-3">₹20,050</span>
+      <Link
+        to="https://preplaced.in/checkout/ltm/aditya-bakshi"
+        className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
+      >
+        Get Started →
+      </Link>
+    </motion.div>
+
+    {/* 3 Month Plan */}
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="rounded-2xl bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur p-5 shadow-xl border border-white/20 flex flex-col items-center text-center"
+    >
+      <h3 className="text-xl font-semibold text-white">3 Months</h3>
+      <p className="text-white/80 mt-2">Deep dive mentorship</p>
+      <span className="text-2xl font-bold text-white mt-3">₹1,187</span>
+      <Link
+        to="https://preplaced.in/checkout/ltm/aditya-bakshi"
+        className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
+      >
+        Get Started →
+      </Link>
+    </motion.div>
+
+    {/* 6 Month Plan */}
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className="rounded-2xl bg-white/10 backdrop-blur p-5 shadow-lg border border-white/20 flex flex-col items-center text-center"
+    >
+      <h3 className="text-xl font-semibold text-white">6 Months</h3>
+      <p className="text-white/80 mt-2">Long-term mentorship</p>
+      <span className="text-2xl font-bold text-white mt-3">₹3,675</span>
+      <Link
+        to="https://preplaced.in/checkout/ltm/aditya-bakshi"
+        className="mt-4 px-4 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
+      >
+        Get Started →
+      </Link>
+    </motion.div>
+  </div>
+</div>
+
         </motion.div>
-      </section>
+      </section>  
 
         {/* Mentor with AI * */}
       <section className="px-6 max-w-5xl mx-auto mb-20">
