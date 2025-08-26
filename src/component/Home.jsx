@@ -269,7 +269,7 @@ export default function EditorsAndRoadmaps() {
 
           {/* Content */}
        <div className="flex-1">
-  <h2 className="text-2xl font-bold text-white">👨‍🏫 My Mentorship</h2>
+  <h2 className="text-2xl font-bold text-white">👨‍🏫 Aditya Bakshi Mentorship</h2>
   <p className="mt-2 text-white/90">
     I guide students in DSA, Development, and Open Source.  
     Book a mentorship plan that suits your journey.
@@ -329,6 +329,25 @@ export default function EditorsAndRoadmaps() {
 
         </motion.div>
       </section>  
+      {/* Topmate.io Section */}
+<div className="p-6 flex justify-center">
+  <div className="max-w-md w-full bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-6 text-white">
+    <h2 className="text-2xl font-bold mb-3">👨‍🏫 1:1 Mentorship</h2>
+    <p className="text-white/90 mb-6">
+      Get personalized guidance in <span className="font-semibold">DSA, Web
+      Development, and Open Source</span>. Book a mentorship call with me on
+      Topmate to accelerate your journey.
+    </p>
+    <a
+      href="https://topmate.io/aditya_bakshi/"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block w-full text-center px-6 py-3 rounded-xl bg-white text-blue-700 font-semibold shadow-md hover:bg-gray-100 transition"
+    >
+      🚀 Book a Call
+    </a>
+  </div>
+</div>
 
         {/* Mentor with AI * */}
       <section className="px-6 max-w-5xl mx-auto mb-20">
