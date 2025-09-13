@@ -350,35 +350,23 @@ export default function EditorsAndRoadmaps() {
 </div>
 
         {/* Mentor with AI * */}
-      <section className="px-6 max-w-5xl mx-auto mb-20">
-        <motion.div
-          whileHover={{ scale: 1.03 }}
-          className={`p-8 rounded-3xl shadow-xl border flex flex-col md:flex-row items-center gap-6 text-center md:text-left
-            ${theme === "dark"
-              ? "bg-gradient-to-r from-green-600/80 to-teal-600/80 border-green-400/30"
-              : "bg-gradient-to-r from-green-300 to-teal-300 border-green-200"}`}
-        >
-          {/* Avatar / Image */}
-          <AiFillRobot className="w-28 h-28 text-white/90" />
+         <section className="p-8 min-h-screen bg-gradient-to-br from-gray-950 to-gray-900 flex flex-col items-center justify-center text-center">
+      <h1 className="text-4xl font-extrabold text-white mb-4">
+        🏟️ Competitive Programming Playground
+      </h1>
+      <p className="text-white/80 max-w-2xl mb-8">
+        Level up your problem-solving skills and track your journey 
+        from <span className="font-semibold">Student</span> to 
+        <span className="font-semibold"> Grandmaster</span>.
+      </p>
 
-          {/* Content */}
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-white">🤖 Get Agents AI</h2>
-            <p className="mt-2 text-white/90">           
-              An AI-powered coding mentor available 24/7 to assist you with coding problems, project ideas, and learning resources.
-             </p>
-          </div>
-
-            <div className="mt-4 flex flex-wrap gap-3 justify-center md:justify-start">
-              <Link
-                to="/mentorship-ai"
-                className="px-5 py-2 rounded-full bg-white/20 text-white hover:bg-white/30 transition"
-              >
-                Agents AI →
-              </Link> 
-            </div>
-        </motion.div>
-      </section>
+      <a
+        href="/cp/editor"
+        className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white font-semibold shadow-lg transition"
+      >
+        🚀 Start Solving
+      </a>
+    </section>
    <section className="px-6 max-w-5xl mx-auto mb-20">
   <motion.div
     whileHover={{ scale: 1.05 }}
